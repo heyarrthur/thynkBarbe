@@ -12,15 +12,12 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              25:'#f8faff',50:'#f3f7ff',100:'#e6efff',200:'#d8e6ff',300:'#b9d0ff',
-              400:'#93b4ff',500:'#4a82ff',600:'#3a6af4',700:'#2e54c6',800:'#2746a3',900:'#203a85'
-            }
+            brand: {25:'#f8faff',50:'#f3f7ff',100:'#e6efff',200:'#d8e6ff',300:'#b9d0ff',400:'#93b4ff',500:'#4a82ff',600:'#3a6af4',700:'#2e54c6',800:'#2746a3',900:'#203a85'}
           },
           boxShadow:{ soft:'0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.08)' },
           borderRadius:{ '2xl':'1rem' },
-          keyframes:{ fadeUp:{ from:{opacity:0, transform:'translateY(6px)'}, to:{opacity:1, transform:'translateY(0)'} } },
-          animation:{ fadeUp:'fadeUp .28s ease both' }
+          keyframes:{ fadeUp:{ from:{opacity:0, transform:'translateY(6px)'}, to:{opacity:1, transform:'translateY(0)'} }, slideIn:{ from:{transform:'translateX(100%)'}, to:{transform:'translateX(0)'} } },
+          animation:{ fadeUp:'fadeUp .28s ease both', slideIn:'slideIn .25s ease both' }
         }
       }
     }
@@ -32,7 +29,11 @@
   <style>
     *{ box-sizing:border-box }
     html, body{ overflow-x:hidden; background:#fff }
-    .input{ @apply w-full border rounded-xl px-3 py-2 text-sm; }
+    .tap{ min-height:44px; min-width:44px }
+    .no-scrollbar::-webkit-scrollbar{ display:none }
+    .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none }
+    input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{ -webkit-appearance: none; margin:0 }
+    input[type=number]{ -moz-appearance:textfield }
   </style>
 </head>
 <body class="bg-white text-slate-800">
@@ -40,7 +41,7 @@
   <!-- TOPBAR (mobile) -->
   <header class="lg:hidden sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
     <div class="flex items-center gap-2 p-3">
-      <button id="openSidebar" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Abrir menu">
+      <button id="openSidebar" class="tap p-2 rounded-xl border hover:bg-slate-50" aria-label="Abrir menu">
         <i class="bi bi-list"></i>
       </button>
       <div class="font-medium">Vendas</div>
@@ -96,13 +97,13 @@
     <!-- SIDEBAR (mobile offcanvas) -->
     <div id="sidebarSheet" class="fixed inset-0 z-50 hidden">
       <div class="absolute inset-0 bg-black/40" data-close-sheet></div>
-      <div class="absolute left-0 top-0 h-full w-[92%] max-w-[340px] bg-white border-r shadow-xl animate-fadeUp">
+      <div class="absolute left-0 top-0 h-full w-[92%] max-w-[340px] bg-white border-r shadow-xl animate-slideIn">
         <div class="flex items-center justify-between px-4 py-4 border-b">
           <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-brand-600 text-white grid place-items-center font-bold">tb</div>
             <div class="font-semibold">thynkBarber</div>
           </div>
-          <button class="p-2 rounded-xl border hover:bg-slate-50" data-close-sheet aria-label="Fechar">
+          <button class="tap p-2 rounded-xl border hover:bg-slate-50" data-close-sheet aria-label="Fechar">
             <i class="bi bi-x-lg"></i>
           </button>
         </div>
@@ -144,17 +145,21 @@
                 <span class="text-xs text-slate-500">Campos obrigatórios *</span>
               </div>
 
-              <!-- Tipo de venda -->
+              <!-- Tabs -->
               <div class="mt-4 grid grid-cols-2 gap-2">
                 <button id="tabProduct" class="px-3 py-2 rounded-xl border bg-brand-50 text-brand-800 border-brand-200"><i class="bi bi-bag me-1"></i>Produto</button>
                 <button id="tabSub" class="px-3 py-2 rounded-xl border hover:bg-slate-50"><i class="bi bi-person-badge me-1"></i>Assinatura</button>
               </div>
 
+              <!-- Alertas -->
+              <div id="alert" class="hidden mt-3 p-3 border rounded-xl bg-rose-50 text-rose-800 text-sm"></div>
+              <div id="toast" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 px-3 py-2 rounded-xl bg-emerald-600 text-white shadow-soft">Venda registrada!</div>
+
               <!-- Cliente & data -->
               <div class="mt-4 grid grid-cols-2 gap-2">
                 <label class="text-sm col-span-2">
                   Cliente *
-                  <input id="fClient" class="mt-1 w-full border rounded-xl px-3 py-2" placeholder="Nome do cliente" list="clientsList" />
+                  <input id="fClient" class="mt-1 w-full border rounded-xl px-3 py-2" placeholder="Nome do cliente" list="clientsList" autocomplete="name" />
                   <datalist id="clientsList"></datalist>
                 </label>
                 <label class="text-sm">
@@ -162,7 +167,7 @@
                   <input id="fDate" type="date" class="mt-1 w-full border rounded-xl px-3 py-2" />
                 </label>
                 <label class="text-sm">
-                  Método de pagamento *
+                  Pagamento *
                   <select id="fPay" class="mt-1 w-full border rounded-xl px-3 py-2">
                     <option value="pix">PIX</option>
                     <option value="card">Cartão</option>
@@ -180,15 +185,25 @@
                   </label>
                   <label class="text-sm">
                     Preço unitário (R$) *
-                    <input id="pPrice" type="number" step="0.01" class="mt-1 w-full border rounded-xl px-3 py-2" />
+                    <input id="pPrice" type="number" inputmode="decimal" step="0.01" class="mt-1 w-full border rounded-xl px-3 py-2" />
                   </label>
                   <label class="text-sm">
                     Quantidade *
-                    <input id="pQty" type="number" min="1" step="1" class="mt-1 w-full border rounded-xl px-3 py-2" value="1" />
+                    <div class="mt-1 flex items-stretch rounded-xl border overflow-hidden">
+                      <button type="button" id="qtyMinus" class="px-3 tap">−</button>
+                      <input id="pQty" type="number" min="1" step="1" class="w-full px-3 py-2 text-center" value="1" />
+                      <button type="button" id="qtyPlus" class="px-3 tap">+</button>
+                    </div>
                   </label>
                   <label class="text-sm col-span-2">
-                    Desconto (R$)
-                    <input id="pDiscount" type="number" step="0.01" min="0" class="mt-1 w-full border rounded-xl px-3 py-2" value="0" />
+                    Desconto
+                    <div class="mt-1 grid grid-cols-3 gap-2">
+                      <input id="pDiscount" type="number" inputmode="decimal" step="0.01" min="0" class="col-span-2 w-full border rounded-xl px-3 py-2" placeholder="0,00" />
+                      <select id="pDiscountType" class="w-full border rounded-xl px-3 py-2">
+                        <option value="amount">R$</option>
+                        <option value="percent">%</option>
+                      </select>
+                    </div>
                   </label>
                   <label class="text-sm col-span-2">
                     Observações
@@ -206,7 +221,7 @@
                   </label>
                   <label class="text-sm">
                     Preço (R$) *
-                    <input id="sPrice" type="number" step="0.01" class="mt-1 w-full border rounded-xl px-3 py-2" />
+                    <input id="sPrice" type="number" inputmode="decimal" step="0.01" class="mt-1 w-full border rounded-xl px-3 py-2" />
                   </label>
                   <label class="text-sm">
                     Duração (meses)
@@ -222,7 +237,7 @@
               <!-- Ações -->
               <div class="mt-4 flex items-center gap-2">
                 <button id="btnClear" class="px-3 py-2 border rounded-xl">Limpar</button>
-                <button id="btnSave" class="ml-auto px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl">Registrar venda</button>
+                <button id="btnSave" class="ml-auto px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl"><i class="bi bi-check2 me-1"></i>Registrar venda</button>
               </div>
             </div>
           </div>
@@ -317,31 +332,15 @@
     });
 
     /* ======= Populate form ======= */
-    function loadClients(){
-      const dl = $('#clientsList'); dl.innerHTML='';
-      CLIENTS.forEach(c=>{ const o=document.createElement('option'); o.value=c.name; dl.appendChild(o); });
-    }
-    function loadProducts(){
-      const sel = $('#pProduct'); sel.innerHTML='';
-      PRODUCTS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=`${p.name} — ${currency(p.price)}`; sel.appendChild(o); });
-      // set defaults
-      if(PRODUCTS[0]){ $('#pProduct').value=PRODUCTS[0].id; $('#pPrice').value=PRODUCTS[0].price; }
-    }
-    function loadPlans(){
-      const sel = $('#sPlan'); sel.innerHTML='';
-      PLANS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=`${p.name} — ${currency(p.price)}`; sel.appendChild(o); });
-      if(PLANS[0]){ $('#sPlan').value=PLANS[0].id; $('#sPrice').value=PLANS[0].price; $('#sMonths').value=PLANS[0].months; }
-    }
+    function loadClients(){ const dl = $('#clientsList'); dl.innerHTML=''; CLIENTS.forEach(c=>{ const o=document.createElement('option'); o.value=c.name; dl.appendChild(o); }); }
+    function loadProducts(){ const sel = $('#pProduct'); sel.innerHTML=''; PRODUCTS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=`${p.name} — ${currency(p.price)}`; sel.appendChild(o); }); if(PRODUCTS[0]){ $('#pProduct').value=PRODUCTS[0].id; $('#pPrice').value=PRODUCTS[0].price; } }
+    function loadPlans(){ const sel = $('#sPlan'); sel.innerHTML=''; PLANS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=`${p.name} — ${currency(p.price)}`; sel.appendChild(o); }); if(PLANS[0]){ $('#sPlan').value=PLANS[0].id; $('#sPrice').value=PLANS[0].price; $('#sMonths').value=PLANS[0].months; } }
 
     /* ======= Events ======= */
-    $('#pProduct').addEventListener('change', ()=>{
-      const p = PRODUCTS.find(x=> x.id === $('#pProduct').value);
-      if(p){ $('#pPrice').value = p.price; }
-      computeSummary();
-    });
-    ['pPrice','pQty','pDiscount','sPrice','sMonths','fPay'].forEach(id=>{
-      $('#'+id).addEventListener('input', computeSummary);
-    });
+    $('#pProduct').addEventListener('change', ()=>{ const p = PRODUCTS.find(x=> x.id === $('#pProduct').value); if(p){ $('#pPrice').value = p.price; } computeSummary(); });
+    ['pPrice','pQty','pDiscount','pDiscountType','sPrice','sMonths','fPay'].forEach(id=>{ $('#'+id).addEventListener('input', computeSummary); });
+    $('#qtyMinus').addEventListener('click', ()=>{ const v=Math.max(1, parseInt($('#pQty').value||1,10)-1); $('#pQty').value=v; computeSummary(); });
+    $('#qtyPlus').addEventListener('click', ()=>{ const v=Math.max(1, parseInt($('#pQty').value||1,10)+1); $('#pQty').value=v; computeSummary(); });
 
     $('#btnClear').addEventListener('click', ()=> resetForm());
     $('#btnSave').addEventListener('click', ()=> saveSale());
@@ -355,21 +354,27 @@
         const price = parseFloat($('#pPrice').value||0);
         const qty   = parseInt($('#pQty').value||1,10);
         const disc  = parseFloat($('#pDiscount').value||0);
-        subtotal = price * qty; discount = Math.min(disc, subtotal); total = subtotal - discount;
+        const dtype = $('#pDiscountType').value;
+        subtotal = price * qty;
+        discount = dtype==='percent' ? Math.min(subtotal, subtotal * (disc/100)) : Math.min(subtotal, disc);
+        total = subtotal - discount;
       } else {
         const price = parseFloat($('#sPrice').value||0);
         subtotal = price; total = price; discount = 0;
       }
       $('#sumSubtotal').textContent = currency(subtotal);
-      $('#sumDiscount').textContent = '- ' + currency(discount);
+      $('#sumDiscount').textContent = (discount>0?'- ':'') + currency(discount);
       $('#sumTotal').textContent = currency(total);
     }
 
     /* ======= Save ======= */
+    function showAlert(msg){ const a=$('#alert'); a.textContent=msg; a.classList.remove('hidden'); setTimeout(()=> a.classList.add('hidden'), 3500); }
+    function showToast(){ const t=$('#toast'); t.classList.remove('hidden'); setTimeout(()=> t.classList.add('hidden'), 1600); }
+
     async function saveSale(){
       const clientName = ($('#fClient').value||'').trim();
       const client = findClientByName(clientName);
-      if(!client){ alert('Selecione/informe um cliente válido.'); return; }
+      if(!client){ showAlert('Selecione/informe um cliente válido.'); return; }
       const date = $('#fDate').value || todayISO();
       const pay  = $('#fPay').value;
 
@@ -380,17 +385,18 @@
         const price = parseFloat($('#pPrice').value||0);
         const qty = parseInt($('#pQty').value||1,10);
         const discount = parseFloat($('#pDiscount').value||0);
+        const discountType = $('#pDiscountType').value;
         const notes = $('#pNotes').value||'';
-        if(!product){ alert('Selecione um produto.'); return }
-        if(price<=0 || qty<=0){ alert('Preço e quantidade devem ser maiores que zero.'); return }
-        payload = { barberId:BARBER.id, date, type:'product', clientId:client.id, productId:pid, price, qty, discount, pay, notes };
+        if(!product){ showAlert('Selecione um produto.'); return }
+        if(price<=0 || qty<=0){ showAlert('Preço e quantidade devem ser maiores que zero.'); return }
+        payload = { barberId:BARBER.id, date, type:'product', clientId:client.id, productId:pid, price, qty, discount, discountType, pay, notes };
       } else {
         const sid = $('#sPlan').value; const plan = PLANS.find(p=> p.id===sid);
         const price = parseFloat($('#sPrice').value||0);
         const months = parseInt($('#sMonths').value||1,10);
         const notes = $('#sNotes').value||'';
-        if(!plan){ alert('Selecione um plano.'); return }
-        if(price<=0){ alert('Preço precisa ser maior que zero.'); return }
+        if(!plan){ showAlert('Selecione um plano.'); return }
+        if(price<=0){ showAlert('Preço precisa ser maior que zero.'); return }
         payload = { barberId:BARBER.id, date, type:'subscription', clientId:client.id, planId:sid, price, months, pay, notes };
       }
 
@@ -402,28 +408,34 @@
         // fallback local
         const id = 'sv'+(SALES.length+1);
         const total = calcTotalFromPayload(payload);
-        SALES.unshift({ id, ...payload, total });
+        const desc = payload.type==='product' ? `${(PRODUCTS.find(p=>p.id===payload.productId)?.name)||'Produto'} x${payload.qty}` : `${(PLANS.find(p=>p.id===payload.planId)?.name)||'Assinatura'} (${payload.months||1}m)`;
+        SALES.unshift({ id, ...payload, total, client: CLIENTS.find(c=>c.id===payload.clientId)?.name, desc });
       }
 
-      alert('Venda registrada com sucesso!');
+      showToast();
       resetForm();
       renderRecent();
     }
 
     function calcTotalFromPayload(p){
-      if(p.type==='product'){ return Math.max(0, p.price*p.qty - (p.discount||0)); }
+      if(p.type==='product'){
+        const subtotal = p.price * p.qty;
+        const discount = p.discountType==='percent' ? (subtotal * (p.discount||0)/100) : (p.discount||0);
+        return Math.max(0, subtotal - Math.min(subtotal, discount));
+      }
       if(p.type==='subscription'){ return p.price; }
       return 0;
     }
 
     function resetForm(){
+      $('#alert').classList.add('hidden');
       // cliente
       $('#fClient').value = '';
       $('#fDate').value = todayISO();
       $('#fPay').value = 'pix';
       // produto
       if(PRODUCTS[0]){ $('#pProduct').value=PRODUCTS[0].id; $('#pPrice').value=PRODUCTS[0].price; }
-      $('#pQty').value=1; $('#pDiscount').value=0; $('#pNotes').value='';
+      $('#pQty').value=1; $('#pDiscount').value=''; $('#pDiscountType').value='amount'; $('#pNotes').value='';
       // plano
       if(PLANS[0]){ $('#sPlan').value=PLANS[0].id; $('#sPrice').value=PLANS[0].price; $('#sMonths').value=PLANS[0].months; $('#sNotes').value=''; }
       // voltar para Produto por padrão
@@ -436,30 +448,21 @@
       const cont = $('#recentList'); cont.innerHTML='';
       if(SALES.length===0){ $('#emptyRecent').classList.remove('hidden'); return } else { $('#emptyRecent').classList.add('hidden'); }
       SALES.slice(0,8).forEach((s,i)=>{
-        const c = CLIENTS.find(x=> x.id===s.clientId);
         const row = document.createElement('div'); row.className='p-3 border rounded-2xl bg-white shadow-soft animate-fadeUp'; row.style.animationDelay=`${i*0.02}s`;
-        let desc = '';
-        if(s.type==='product'){
-          const p = PRODUCTS.find(x=> x.id===s.productId);
-          desc = `${p?p.name:'Produto'} x${s.qty}`;
-        } else {
-          const plan = PLANS.find(x=> x.id===s.planId);
-          desc = `${plan?plan.name:'Assinatura'} (${s.months||1}m)`;
-        }
-        const total = s.total ?? calcTotalFromPayload(s);
+        const typeChip = s.type==='product' ? 'bg-indigo-50 text-indigo-800 border-indigo-200' : 'bg-amber-50 text-amber-800 border-amber-200';
         row.innerHTML = `
           <div class='flex items-center justify-between'>
             <div class='text-xs text-slate-500'>${(s.date||'').split('-').reverse().join('/')}</div>
-            <span class='px-2 py-0.5 text-xs rounded-xl border ${ s.type==='product' ? 'bg-indigo-50 text-indigo-800 border-indigo-200' : 'bg-amber-50 text-amber-800 border-amber-200' }'>${ s.type==='product' ? 'Produto' : 'Assinatura' }</span>
+            <span class='px-2 py-0.5 text-xs rounded-xl border ${typeChip}'>${ s.type==='product' ? 'Produto' : 'Assinatura' }</span>
           </div>
           <div class='mt-2 flex items-center gap-3'>
-            <div class='w-10 h-10 rounded-full grid place-items-center text-brand-800 border' style='background:rgba(74,130,255,.08); border-color:rgba(74,130,255,.25)'>${(c?.name||'?').split(' ').map(p=>p[0]).slice(0,2).join('')}</div>
+            <div class='w-10 h-10 rounded-full grid place-items-center text-brand-800 border' style='background:rgba(74,130,255,.08); border-color:rgba(74,130,255,.25)'>${(s.client||'?').split(' ').map(p=>p[0]).slice(0,2).join('')}</div>
             <div class='min-w-0'>
-              <div class='font-medium truncate'>${c?.name||'Cliente'}</div>
-              <div class='text-sm text-slate-500 truncate'>${desc}</div>
+              <div class='font-medium truncate'>${s.client||'Cliente'}</div>
+              <div class='text-sm text-slate-500 truncate'>${s.desc || (s.type==='product' ? 'Produto' : 'Assinatura')}</div>
             </div>
             <div class='ml-auto text-right'>
-              <div class='text-sm'>${currency(total)}</div>
+              <div class='text-sm'>${currency(s.total ?? calcTotalFromPayload(s))}</div>
               <div class='text-xs text-slate-500'>${ s.pay==='pix' ? 'PIX' : s.pay==='card' ? 'Cartão' : 'Dinheiro' }</div>
             </div>
           </div>`;
