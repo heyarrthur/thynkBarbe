@@ -19,8 +19,8 @@
           },
           boxShadow:{ soft:'0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.08)' },
           borderRadius:{ '2xl':'1rem' },
-          keyframes:{ fadeUp:{ from:{opacity:0, transform:'translateY(6px)'}, to:{opacity:1, transform:'translateY(0)'} } },
-          animation:{ fadeUp:'fadeUp .28s ease both' }
+          keyframes:{ fadeUp:{ from:{opacity:0, transform:'translateY(6px)'}, to:{opacity:1, transform:'translateY(0)'} }, slideIn:{ from:{transform:'translateX(100%)'}, to:{transform:'translateX(0)'} } },
+          animation:{ fadeUp:'fadeUp .28s ease both', slideIn:'slideIn .25s ease both' }
         }
       }
     }
@@ -32,16 +32,15 @@
   <style>
     *{ box-sizing:border-box }
     html, body{ overflow-x:hidden; background:#fff }
-    .no-scrollbar::-webkit-scrollbar{ display:none }
-    .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none }
+    .tap{ min-height:44px; min-width:44px }
   </style>
 </head>
 <body class="bg-white text-slate-800">
 
   <!-- TOPBAR (mobile) -->
-  <header class="lg:hidden sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
+  <header class="lg:hidden sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
     <div class="flex items-center gap-2 p-3">
-      <button id="openSidebar" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Abrir menu">
+      <button id="openSidebar" class="tap p-2 rounded-xl border hover:bg-slate-50" aria-label="Abrir menu">
         <i class="bi bi-list"></i>
       </button>
       <div class="font-medium">Faturamento</div>
@@ -97,13 +96,13 @@
     <!-- SIDEBAR (mobile offcanvas) -->
     <div id="sidebarSheet" class="fixed inset-0 z-50 hidden">
       <div class="absolute inset-0 bg-black/40" data-close-sheet></div>
-      <div class="absolute left-0 top-0 h-full w-[92%] max-w-[340px] bg-white border-r shadow-xl animate-fadeUp">
+      <div class="absolute left-0 top-0 h-full w-[92%] max-w-[340px] bg-white border-r shadow-xl animate-slideIn">
         <div class="flex items-center justify-between px-4 py-4 border-b">
           <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-brand-600 text-white grid place-items-center font-bold">tb</div>
             <div class="font-semibold">thynkBarber</div>
           </div>
-          <button class="p-2 rounded-xl border hover:bg-slate-50" data-close-sheet aria-label="Fechar">
+          <button class="tap p-2 rounded-xl border hover:bg-slate-50" data-close-sheet aria-label="Fechar">
             <i class="bi bi-x-lg"></i>
           </button>
         </div>
@@ -135,92 +134,85 @@
 
     <!-- MAIN -->
     <main class="flex-1 min-h-screen lg:ml-72">
-      <!-- FILTROS -->
-      <section class="px-3 lg:px-6 py-3 border-b bg-white sticky top-0 z-20">
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
-          <input id="filterMonth" type="month" class="col-span-1 border rounded-xl px-3 py-2 text-sm" />
+      <!-- FILTROS STICKY -->
+      <section class="px-3 lg:px-6 py-3 border-b bg-white sticky top-[49px] lg:top-0 z-30">
+        <div class="grid grid-cols-2 md:grid-cols-8 gap-2">
+          <input id="monthPick" type="month" class="col-span-2 md:col-span-2 border rounded-xl px-3 py-2 text-sm" />
           <input id="dateFrom" type="date" class="col-span-1 border rounded-xl px-3 py-2 text-sm" />
           <input id="dateTo"   type="date" class="col-span-1 border rounded-xl px-3 py-2 text-sm" />
-          <select id="filterType" class="col-span-1 border rounded-xl px-3 py-2 text-sm">
-            <option value="">Todos os tipos</option>
-            <option value="cut">Corte</option>
-            <option value="extra">Serviço extra</option>
-            <option value="product">Produto</option>
-            <option value="subscription">Assinatura</option>
+          <select id="payFilter" class="col-span-2 md:col-span-1 border rounded-xl px-3 py-2 text-sm">
+            <option value="">Todos pagamentos</option>
+            <option value="pix">PIX</option>
+            <option value="card">Cartão</option>
+            <option value="cash">Dinheiro</option>
           </select>
-          <input id="search" placeholder="Buscar descrição/cliente…" class="col-span-2 md:col-span-1 border rounded-xl px-3 py-2 text-sm" />
-          <div class="flex items-center gap-2 col-span-2 md:col-span-1">
-            <button id="applyFilters" class="px-3 py-2 border rounded-xl text-sm w-full md:w-auto"><i class="bi bi-funnel me-1"></i>Filtrar</button>
-            <button id="clearFilters" class="px-3 py-2 border rounded-xl text-sm w-full md:w-auto"><i class="bi bi-x-circle me-1"></i>Limpar</button>
-          </div>
+          <button id="apply" class="px-3 py-2 border rounded-xl text-sm"><i class="bi bi-funnel me-1"></i>Aplicar</button>
+          <button id="exportCSV" class="px-3 py-2 border rounded-xl text-sm"><i class="bi bi-download me-1"></i>CSV</button>
         </div>
       </section>
 
-      <!-- KPIs -->
+      <!-- KPIs empilhados (mobile-first) -->
       <section class="p-3 lg:p-6">
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div class="grid grid-cols-1 gap-3">
           <div class="p-4 border rounded-2xl bg-white shadow-soft">
-            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-scissors"></i> Cortes</div>
-            <div id="kpiCuts" class="text-xl font-semibold mt-1">R$ —</div>
-            <div id="kpiCutsCount" class="text-xs text-slate-500">— atendimentos</div>
-          </div>
-          <div class="p-4 border rounded-2xl bg-white shadow-soft">
-            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-stars"></i> Serviços extras</div>
-            <div id="kpiExtras" class="text-xl font-semibold mt-1">R$ —</div>
-            <div id="kpiExtrasCount" class="text-xs text-slate-500">— serviços</div>
-          </div>
-          <div class="p-4 border rounded-2xl bg-white shadow-soft">
-            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-bag"></i> Produtos</div>
-            <div id="kpiProducts" class="text-xl font-semibold mt-1">R$ —</div>
-            <div id="kpiProductsCount" class="text-xs text-slate-500">— vendas</div>
-          </div>
-          <div class="p-4 border rounded-2xl bg-white shadow-soft">
-            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-person-badge"></i> Assinaturas</div>
-            <div id="kpiSubs" class="text-xl font-semibold mt-1">R$ —</div>
-            <div id="kpiSubsCount" class="text-xs text-slate-500">— assinaturas</div>
-          </div>
-          <div class="p-4 border rounded-2xl bg-white shadow-soft md:col-span-1 col-span-2">
-            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-cash-stack"></i> Total</div>
+            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-cash-coin"></i> Receita total</div>
             <div id="kpiTotal" class="text-2xl font-semibold mt-1">R$ —</div>
             <div id="kpiCount" class="text-xs text-slate-500">— entradas</div>
           </div>
+          <div class="p-4 border rounded-2xl bg-white shadow-soft">
+            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-scissors"></i> Cortes</div>
+            <div class="flex items-center gap-3 mt-1">
+              <div id="barCuts" class="h-2 flex-1 rounded-full bg-slate-100 overflow-hidden"><div class="h-2 bg-brand-500" style="width:0%"></div></div>
+              <div id="kpiCuts" class="text-sm font-medium">R$ —</div>
+            </div>
+          </div>
+          <div class="p-4 border rounded-2xl bg-white shadow-soft">
+            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-stars"></i> Serviços extras</div>
+            <div class="flex items-center gap-3 mt-1">
+              <div id="barExtras" class="h-2 flex-1 rounded-full bg-slate-100 overflow-hidden"><div class="h-2 bg-emerald-500" style="width:0%"></div></div>
+              <div id="kpiExtras" class="text-sm font-medium">R$ —</div>
+            </div>
+          </div>
+          <div class="p-4 border rounded-2xl bg-white shadow-soft">
+            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-bag"></i> Produtos</div>
+            <div class="flex items-center gap-3 mt-1">
+              <div id="barProducts" class="h-2 flex-1 rounded-full bg-slate-100 overflow-hidden"><div class="h-2 bg-indigo-500" style="width:0%"></div></div>
+              <div id="kpiProducts" class="text-sm font-medium">R$ —</div>
+            </div>
+          </div>
+          <div class="p-4 border rounded-2xl bg-white shadow-soft">
+            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-person-badge"></i> Assinaturas</div>
+            <div class="flex items-center gap-3 mt-1">
+              <div id="barSubs" class="h-2 flex-1 rounded-full bg-slate-100 overflow-hidden"><div class="h-2 bg-amber-500" style="width:0%"></div></div>
+              <div id="kpiSubs" class="text-sm font-medium">R$ —</div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- GRÁFICO simples (por dia) + EXTRATO -->
-      <section class="px-3 lg:px-6 pb-6">
+      <!-- Gráfico simples (SVG) e Top dias -->
+      <section class="p-3 lg:p-6 pt-0">
         <div class="grid lg:grid-cols-12 gap-4">
-          <div class="lg:col-span-6">
-            <div class="p-4 border rounded-2xl bg-white shadow-soft">
-              <div class="flex items-center justify-between">
-                <div class="font-medium">Receita por dia</div>
-                <button id="exportCSV" class="px-3 py-2 border rounded-xl text-sm"><i class="bi bi-download me-1"></i>CSV</button>
-              </div>
-              <div id="chart" class="mt-4">
-                <!-- SVG será gerado via JS -->
-              </div>
-            </div>
+          <div class="lg:col-span-7 p-4 border rounded-2xl bg-white shadow-soft">
+            <div class="font-medium">Receita por dia</div>
+            <div id="chart" class="mt-3"></div>
           </div>
+          <div class="lg:col-span-5 p-4 border rounded-2xl bg-white shadow-soft">
+            <div class="font-medium">Top dias</div>
+            <div id="topDays" class="mt-3 space-y-2"></div>
+          </div>
+        </div>
+      </section>
 
-          <div class="lg:col-span-6">
-            <div class="p-4 border rounded-2xl bg-white shadow-soft">
-              <div class="font-medium mb-3">Extrato</div>
-              <div class="overflow-hidden border rounded-2xl">
-                <table class="w-full text-sm">
-                  <thead class="bg-slate-50 text-slate-600">
-                    <tr>
-                      <th class="text-left p-2">Data</th>
-                      <th class="text-left p-2">Descrição</th>
-                      <th class="text-left p-2">Tipo</th>
-                      <th class="text-right p-2">Valor</th>
-                    </tr>
-                  </thead>
-                  <tbody id="ledger"></tbody>
-                </table>
-              </div>
-              <div id="emptyState" class="hidden p-6 text-center text-slate-500 border rounded-2xl mt-3">Sem entradas para o período.</div>
-            </div>
+      <!-- Extrato (lista responsiva) -->
+      <section class="p-3 lg:p-6 pt-0">
+        <div class="p-3 md:p-4 border rounded-2xl bg-white shadow-soft">
+          <div class="flex items-center justify-between">
+            <div class="font-medium">Extrato</div>
+            <div class="text-xs text-slate-500" id="rangeLabel">—</div>
           </div>
+          <div id="txList" class="mt-3 space-y-2"></div>
+          <div id="emptyTx" class="hidden p-6 text-center text-slate-500 border rounded-2xl">Sem entradas nesse período.</div>
         </div>
       </section>
     </main>
@@ -228,186 +220,156 @@
 
   <!-- =================== JS =================== -->
   <script>
-    /* ======= API (AJAX-ready) ======= */
-    const API = {
-      async getTransactions(barberId, from, to){
-        try{
-          const r = await fetch(`/api/barbers/${barberId}/transactions?from=${from}&to=${to}`);
-          if(!r.ok) throw 0; return await r.json();
-        }catch{
-          // fallback mock por período
-          return TRANSACTIONS.filter(t => t.date >= from && t.date <= to);
-        }
-      }
-    };
-
-    /* ======= Mock (fallback) ======= */
-    const BARBER = { id: 'b1', name: 'Carlos Silva' };
-    // Tipos: cut, extra, product, subscription
+    /* ======= Mock / AJAX-ready ======= */
+    const BARBER = { id:'b1', name:'Carlos Silva' };
     const TRANSACTIONS = [
-      { id:'t1',  date:'2025-10-01', type:'cut',          desc:'Corte - João Pedro',     amount:55 },
-      { id:'t2',  date:'2025-10-01', type:'product',      desc:'Pomada Modeladora',      amount:49.9 },
-      { id:'t3',  date:'2025-10-02', type:'extra',        desc:'Barba quente - Matheus', amount:40 },
-      { id:'t4',  date:'2025-10-03', type:'subscription', desc:'Plano Mensal - Rafael',  amount:89.9 },
-      { id:'t5',  date:'2025-10-03', type:'cut',          desc:'Corte - Rafael',         amount:55 },
-      { id:'t6',  date:'2025-10-05', type:'product',      desc:'Óleo para Barba',        amount:39.9 },
-      { id:'t7',  date:'2025-10-08', type:'extra',        desc:'Sobrancelha - João',     amount:25 },
-      { id:'t8',  date:'2025-10-10', type:'cut',          desc:'Corte - Matheus',        amount:55 },
-      { id:'t9',  date:'2025-10-12', type:'subscription', desc:'Plano Mensal - João',    amount:89.9 },
-      { id:'t10', date:'2025-10-12', type:'product',      desc:'Shampoo Fresh',          amount:34.9 },
-      { id:'t11', date:'2025-10-14', type:'extra',        desc:'Coloração rápida',       amount:60 },
-      { id:'t12', date:'2025-10-15', type:'cut',          desc:'Corte - João Pedro',     amount:55 },
-      { id:'t13', date:'2025-10-15', type:'product',      desc:'Balm Pós-barba',         amount:29.9 },
+      { id:'t1', date:'2025-10-01', type:'cut', amount:55, pay:'pix' },
+      { id:'t2', date:'2025-10-01', type:'product', amount:49.9, pay:'card', desc:'Pomada' },
+      { id:'t3', date:'2025-10-02', type:'extra', amount:40, pay:'cash', desc:'Sobrancelha' },
+      { id:'t4', date:'2025-10-03', type:'subscription', amount:89.9, pay:'card', desc:'Plano Mensal' },
+      { id:'t5', date:'2025-10-03', type:'cut', amount:55, pay:'pix' },
+      { id:'t6', date:'2025-10-05', type:'product', amount:39.9, pay:'pix', desc:'Óleo' },
+      { id:'t7', date:'2025-10-08', type:'extra', amount:25, pay:'cash' },
+      { id:'t8', date:'2025-10-10', type:'cut', amount:55, pay:'card' },
+      { id:'t9', date:'2025-10-12', type:'subscription', amount:89.9, pay:'card', desc:'Plano Mensal' },
+      { id:'t10', date:'2025-10-12', type:'product', amount:34.9, pay:'pix', desc:'Shampoo' },
+      { id:'t11', date:'2025-10-14', type:'extra', amount:60, pay:'pix' },
+      { id:'t12', date:'2025-10-15', type:'cut', amount:55, pay:'pix' },
+      { id:'t13', date:'2025-10-15', type:'product', amount:29.9, pay:'cash', desc:'Balm' },
     ];
 
-    /* ======= Estado & Utils ======= */
+    /* ======= Utils ======= */
     const $ = sel => document.querySelector(sel);
     const pad = n=> String(n).padStart(2,'0');
-    const fmtDateISO = d=> `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    const parseISO = s=> { const [Y,M,D] = s.split('-').map(Number); return new Date(Y, M-1, D) };
-    const currency = v=> v.toLocaleString('pt-BR',{style:'currency', currency:'BRL'});
-
-    // Filtro ativo
-    let range = { from:'2025-10-01', to:'2025-10-15' };
+    const currency = v => v.toLocaleString('pt-BR',{ style:'currency', currency:'BRL' });
+    const fmtDate = s => s.split('-').reverse().join('/');
+    const monthRange = ym => { const [Y,M]=ym.split('-').map(Number); const from=`${Y}-${pad(M)}-01`; const to=new Date(Y,M,0).toISOString().slice(0,10); return {from,to} };
 
     /* ======= Sidebar mobile ======= */
     $('#openSidebar')?.addEventListener('click', ()=> $('#sidebarSheet').classList.remove('hidden'));
     document.querySelectorAll('[data-close-sheet]').forEach(b=> b.addEventListener('click', ()=> $('#sidebarSheet').classList.add('hidden')));
 
     /* ======= Filtros ======= */
-    function setMonthToRange(ym){
-      const [Y,M] = ym.split('-').map(Number);
-      const from = new Date(Y, M-1, 1);
-      const to   = new Date(Y, M, 0);
-      range = { from: fmtDateISO(from), to: fmtDateISO(to) };
-      $('#dateFrom').value = range.from; $('#dateTo').value = range.to;
-    }
+    const monthPick = $('#monthPick');
+    const dateFrom = $('#dateFrom');
+    const dateTo   = $('#dateTo');
+    const payFilter= $('#payFilter');
 
-    $('#filterMonth').addEventListener('change', ()=>{ setMonthToRange($('#filterMonth').value); loadData(); });
-    $('#applyFilters').addEventListener('click', ()=>{
-      const f = $('#dateFrom').value || range.from; const t = $('#dateTo').value || range.to;
-      range = { from:f, to:t }; loadData();
+    let range = { from:'2025-10-01', to:'2025-10-31' };
+
+    monthPick.addEventListener('change', ()=>{ range = monthRange(monthPick.value); dateFrom.value=range.from; dateTo.value=range.to; renderAll(); });
+    $('#apply').addEventListener('click', ()=>{ range.from=dateFrom.value||range.from; range.to=dateTo.value||range.to; renderAll(); });
+
+    $('#exportCSV').addEventListener('click', ()=>{
+      const rows = getRows();
+      const head = 'Data,Tipo,Valor,Pagamento,Descrição';
+      const body = rows.map(r=> [r.date, r.type, r.amount, r.pay || '', r.desc || ''].join(','));
+      const csv = [head, ...body].join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob); const a=document.createElement('a');
+      a.href=url; a.download=`faturamento_${range.from}_a_${range.to}.csv`; a.click(); URL.revokeObjectURL(url);
     });
-    $('#clearFilters').addEventListener('click', ()=>{
-      $('#filterType').value = ''; $('#search').value='';
-      $('#filterMonth').value = range.from.substring(0,7);
-      $('#dateFrom').value = range.from; $('#dateTo').value = range.to; loadData();
-    });
 
-    /* ======= Cálculos ======= */
-    function applyClientFilters(rows){
-      const type = $('#filterType').value; const q = ($('#search').value||'').toLowerCase();
-      return rows.filter(r=> (!type || r.type===type) && (!q || r.desc.toLowerCase().includes(q)) );
+    function getRows(){
+      return TRANSACTIONS.filter(t=> t.date>=range.from && t.date<=range.to && (!payFilter.value || t.pay===payFilter.value));
     }
 
-    function summarize(rows){
-      const out = { cuts:0, extras:0, products:0, subs:0, count:{cuts:0,extras:0,products:0,subs:0}, total:0, entries:rows.length };
-      rows.forEach(r=>{
-        if(r.type==='cut'){ out.cuts+=r.amount; out.count.cuts++; }
-        else if(r.type==='extra'){ out.extras+=r.amount; out.count.extras++; }
-        else if(r.type==='product'){ out.products+=r.amount; out.count.products++; }
-        else if(r.type==='subscription'){ out.subs+=r.amount; out.count.subs++; }
-        out.total+=r.amount;
-      });
-      return out;
+    /* ======= KPIs & barras ======= */
+    function sumByType(rows){
+      const b = { total:0, cuts:0, extras:0, products:0, subs:0 };
+      rows.forEach(r=>{ b.total+=r.amount; if(r.type==='cut') b.cuts+=r.amount; else if(r.type==='extra') b.extras+=r.amount; else if(r.type==='product') b.products+=r.amount; else if(r.type==='subscription') b.subs+=r.amount; });
+      return b;
     }
-
-    /* ======= Render KPIs ======= */
-    function renderKPIs(sum){
-      $('#kpiCuts').textContent = currency(sum.cuts); $('#kpiCutsCount').textContent = `${sum.count.cuts} atendimentos`;
-      $('#kpiExtras').textContent = currency(sum.extras); $('#kpiExtrasCount').textContent = `${sum.count.extras} serviços`;
-      $('#kpiProducts').textContent = currency(sum.products); $('#kpiProductsCount').textContent = `${sum.count.products} vendas`;
-      $('#kpiSubs').textContent = currency(sum.subs); $('#kpiSubsCount').textContent = `${sum.count.subs} assinaturas`;
-      $('#kpiTotal').textContent = currency(sum.total); $('#kpiCount').textContent = `${sum.entries} entradas`;
+    function renderKpis(rows){
+      const b = sumByType(rows);
+      $('#kpiTotal').textContent = currency(b.total);
+      $('#kpiCount').textContent = `${rows.length} entradas`;
+      $('#kpiCuts').textContent = currency(b.cuts); $('#barCuts>div').style.width = pct(b.cuts,b.total)+'%';
+      $('#kpiExtras').textContent = currency(b.extras); $('#barExtras>div').style.width = pct(b.extras,b.total)+'%';
+      $('#kpiProducts').textContent = currency(b.products); $('#barProducts>div').style.width = pct(b.products,b.total)+'%';
+      $('#kpiSubs').textContent = currency(b.subs); $('#barSubs>div').style.width = pct(b.subs,b.total)+'%';
     }
+    const pct = (v,total)=> total>0 ? Math.round((v/total)*100) : 0;
 
-    /* ======= Gráfico (SVG simples por dia) ======= */
+    /* ======= Chart (SVG) ======= */
     function renderChart(rows){
       const wrap = $('#chart'); wrap.innerHTML='';
-      if(rows.length===0){ wrap.innerHTML = '<div class="text-sm text-slate-500">Sem dados no período.</div>'; return }
-      // Agrupar por data
-      const map = new Map();
-      rows.forEach(r=> map.set(r.date, (map.get(r.date)||0) + r.amount));
-      const points = [...map.entries()].sort((a,b)=> a[0].localeCompare(b[0]));
-      const max = Math.max(...points.map(p=> p[1]));
-      const W=560, H=160, P=24; // largura/altura, padding
-      const step = (W - P*2) / Math.max(points.length-1,1);
-      const y = v => H - P - (v/max)*(H - P*2);
-      const x = i => P + i*step;
-      let d = '';
-      points.forEach((p,i)=>{ d += (i===0? 'M':'L') + x(i) + ',' + y(p[1]) + ' '; });
-      const circles = points.map((p,i)=> `<circle cx="${x(i)}" cy="${y(p[1])}" r="3" class="fill-brand-600"/>`).join('');
-      const labels  = points.map((p,i)=> `<text x="${x(i)}" y="${H-6}" font-size="10" text-anchor="middle" class="fill-slate-500">${p[0].slice(8,10)}/${p[0].slice(5,7)}</text>`).join('');
-      wrap.innerHTML = `
-        <svg viewBox="0 0 ${W} ${H}" class="w-full">
-          <defs>
-            <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stop-color="#4a82ff" stop-opacity=".35"/>
-              <stop offset="100%" stop-color="#4a82ff" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <rect x="1" y="1" width="${W-2}" height="${H-2}" rx="12" class="fill-white stroke-slate-200"/>
-          <path d="${d}" class="stroke-brand-600 fill-none" stroke-width="2"/>
-          <path d="${d} L ${x(points.length-1)} ${H-P} L ${x(0)} ${H-P} Z" fill="url(#g)" opacity="0.5"/>
-          ${circles}
-          ${labels}
-        </svg>`;
+      if(rows.length===0){ wrap.innerHTML='<div class="text-sm text-slate-500">Sem dados.</div>'; return }
+      // group by date
+      const map = new Map(); rows.forEach(r=> map.set(r.date, (map.get(r.date)||0)+r.amount));
+      const days = Array.from(map.keys()).sort();
+      const vals = days.map(d=> map.get(d));
+      const max = Math.max(...vals, 1);
+      const W=560, H=180, P=28; const bw= Math.max(8, Math.min(28, (W-P*2)/days.length - 8));
+      const x = i => P + i * (bw+8);
+      const y = v => H-P - (v/max)*(H-P*2);
+      let bars='';
+      vals.forEach((v,i)=>{
+        const h = H-P - y(v);
+        bars += `<rect x="${x(i)}" y="${y(v)}" width="${bw}" height="${h}" rx="6" class="fill-brand-600"/>`;
+      });
+      const labels = days.map((d,i)=> `<text x="${x(i)+bw/2}" y="${H-6}" font-size="10" text-anchor="middle" class="fill-slate-500">${d.slice(8,10)}</text>`).join('');
+      wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="w-full">${bars}${labels}</svg>`;
+    }
+
+    /* ======= Top dias ======= */
+    function renderTopDays(rows){
+      const cont = $('#topDays'); cont.innerHTML='';
+      const map = new Map(); rows.forEach(r=> map.set(r.date, (map.get(r.date)||0)+r.amount));
+      const tops = Array.from(map.entries()).sort((a,b)=> b[1]-a[1]).slice(0,5);
+      if(tops.length===0){ cont.innerHTML = '<div class="text-sm text-slate-500">Sem dados.</div>'; return }
+      tops.forEach(([date,val])=>{
+        const row=document.createElement('div'); row.className='p-3 border rounded-2xl bg-white shadow-soft flex items-center gap-3';
+        row.innerHTML = `<div class='text-xs text-slate-500'>${fmtDate(date)}</div><div class='ml-auto font-medium'>${currency(val)}</div>`;
+        cont.appendChild(row);
+      });
     }
 
     /* ======= Extrato ======= */
-    function typeLabel(t){
-      return t==='cut'? 'Corte': t==='extra'? 'Serviço extra': t==='product'? 'Produto': 'Assinatura';
-    }
-    function renderLedger(rows){
-      const tb = $('#ledger'); tb.innerHTML='';
-      if(rows.length===0){ $('#emptyState').classList.remove('hidden'); return } else { $('#emptyState').classList.add('hidden'); }
-      rows.sort((a,b)=> a.date.localeCompare(b.date));
-      rows.forEach(r=>{
-        const tr=document.createElement('tr'); tr.className='border-t';
-        tr.innerHTML = `<td class='p-2 whitespace-nowrap text-slate-600'>${r.date.split('-').reverse().join('/')}</td>
-                        <td class='p-2'>${r.desc}</td>
-                        <td class='p-2'><span class='px-2 py-0.5 text-xs rounded-xl border ${
-                          r.type==='cut'? 'bg-slate-100 text-slate-700 border-slate-200' :
-                          r.type==='extra'? 'bg-amber-50 text-amber-800 border-amber-200' :
-                          r.type==='product'? 'bg-indigo-50 text-indigo-800 border-indigo-200' :
-                          'bg-emerald-50 text-emerald-800 border-emerald-200'
-                        }'>${typeLabel(r.type)}</span></td>
-                        <td class='p-2 text-right font-medium'>${currency(r.amount)}</td>`;
-        tb.appendChild(tr);
+    function renderTx(rows){
+      $('#rangeLabel').textContent = `${fmtDate(range.from)} — ${fmtDate(range.to)}`;
+      const cont = $('#txList'); cont.innerHTML='';
+      $('#emptyTx').classList.toggle('hidden', rows.length>0);
+      if(rows.length===0) return;
+      rows.sort((a,b)=> (a.date+b.type).localeCompare(b.date+b.type));
+      rows.forEach((t,i)=>{
+        const icon = t.type==='cut'?'scissors': t.type==='extra'?'stars': t.type==='product'?'bag':'person-badge';
+        const chip = t.type==='cut'?'bg-brand-50 text-brand-800 border-brand-200': t.type==='extra'?'bg-emerald-50 text-emerald-800 border-emerald-200': t.type==='product'?'bg-indigo-50 text-indigo-800 border-indigo-200':'bg-amber-50 text-amber-800 border-amber-200';
+        const row=document.createElement('div'); row.className='p-3 border rounded-2xl bg-white shadow-soft animate-fadeUp'; row.style.animationDelay=`${i*0.02}s`;
+        row.innerHTML = `
+          <div class='flex items-center justify-between'>
+            <div class='text-xs text-slate-500'>${fmtDate(t.date)}</div>
+            <span class='px-2 py-0.5 text-xs rounded-xl border ${chip}'><i class='bi bi-${icon} me-1'></i>${ t.type==='cut'?'Corte': t.type==='extra'?'Extra': t.type==='product'?'Produto':'Assinatura' }</span>
+          </div>
+          <div class='mt-2 flex items-center gap-3'>
+            <div class='min-w-0'>
+              <div class='text-sm text-slate-500 truncate'>${t.desc || '—'}</div>
+            </div>
+            <div class='ml-auto text-right'>
+              <div class='text-sm font-medium'>${currency(t.amount)}</div>
+              <div class='text-xs text-slate-500'>${ t.pay==='pix' ? 'PIX' : t.pay==='card' ? 'Cartão' : 'Dinheiro' }</div>
+            </div>
+          </div>`;
+        cont.appendChild(row);
       });
     }
 
-    /* ======= Export CSV ======= */
-    function exportCSV(rows){
-      const csv = ['Data,Tipo,Descrição,Valor'];
-      rows.forEach(r=> csv.push(`${r.date},${typeLabel(r.type)},"${r.desc}",${r.amount}`));
-      const blob = new Blob([csv.join('\n')], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download=`faturamento_${range.from}_a_${range.to}.csv`; a.click(); URL.revokeObjectURL(url);
-    }
-    document.getElementById('exportCSV').addEventListener('click', ()=>{
-      exportCSV(applyClientFilters(window._rows||[]));
-    });
-
-    /* ======= Load ======= */
-    async function loadData(){
-      const rowsRaw = await API.getTransactions(BARBER.id, range.from, range.to);
-      const rows = applyClientFilters(rowsRaw);
-      window._rows = rows; // para export
-      const sum = summarize(rows);
-      renderKPIs(sum);
+    /* ======= Render geral ======= */
+    function renderAll(){
+      const rows = getRows();
+      renderKpis(rows);
       renderChart(rows);
-      renderLedger(rows);
+      renderTopDays(rows);
+      renderTx(rows);
     }
 
     /* ======= Init ======= */
     function init(){
       document.getElementById('barberName').textContent = BARBER.name;
-      // mês atual por padrão
-      const today = new Date('2025-10-15');
-      const ym = today.toISOString().slice(0,7);
-      $('#filterMonth').value = ym; setMonthToRange(ym);
-      loadData();
+      const today = '2025-10-15';
+      const ym = today.slice(0,7);
+      monthPick.value = ym; const r = monthRange(ym); range = r; dateFrom.value=r.from; dateTo.value=r.to;
+      renderAll();
     }
     init();
   </script>

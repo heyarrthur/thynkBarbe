@@ -21,7 +21,7 @@
           borderRadius:{ '2xl':'1rem' },
           keyframes:{
             fadeUp:{ from:{opacity:0, transform:'translateY(6px)'}, to:{opacity:1, transform:'translateY(0)'} },
-            slideIn:{ from:{transform:'translateX(-100%)'}, to:{transform:'translateX(0)'} }
+            slideIn:{ from:{transform:'translateX(100%)'}, to:{transform:'translateX(0)'} }
           },
           animation:{ fadeUp:'fadeUp .28s ease both', slideIn:'slideIn .25s ease both' }
         }
@@ -37,14 +37,15 @@
     html, body{ overflow-x:hidden; background:#fff }
     .no-scrollbar::-webkit-scrollbar{ display:none }
     .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none }
+    .tap{ min-height:44px; min-width:44px }
   </style>
 </head>
 <body class="bg-white text-slate-800">
 
   <!-- TOPBAR (mobile) -->
-  <header class="lg:hidden sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
+  <header class="lg:hidden sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
     <div class="flex items-center gap-2 p-3">
-      <button id="openSidebar" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Abrir menu">
+      <button id="openSidebar" class="tap p-2 rounded-xl border hover:bg-slate-50" aria-label="Abrir menu">
         <i class="bi bi-list"></i>
       </button>
       <div class="font-medium">Histórico</div>
@@ -71,7 +72,7 @@
 
           <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Agendamentos</div>
           <a href="agenda.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
-            <i class="bi bi-calendar3"></i><span>Agendamentos</span>
+            <i class="bi bi-calendar3"></i><span>Agenda</span>
           </a>
           <a href="historico.html" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-brand-50 text-brand-800 border border-brand-100">
             <i class="bi bi-clock-history"></i><span>Histórico</span>
@@ -106,7 +107,7 @@
             <div class="w-9 h-9 rounded-xl bg-brand-600 text-white grid place-items-center font-bold">tb</div>
             <div class="font-semibold">thynkBarber</div>
           </div>
-          <button class="p-2 rounded-xl border hover:bg-slate-50" data-close-sheet aria-label="Fechar">
+          <button class="tap p-2 rounded-xl border hover:bg-slate-50" data-close-sheet aria-label="Fechar">
             <i class="bi bi-x-lg"></i>
           </button>
         </div>
@@ -117,7 +118,7 @@
           </a>
           <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Agendamentos</div>
           <a href="agenda.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
-            <i class="bi bi-calendar3"></i><span>Agendamentos</span>
+            <i class="bi bi-calendar3"></i><span>Agenda</span>
           </a>
           <a href="historico.html" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-brand-50 text-brand-800 border border-brand-100">
             <i class="bi bi-clock-history"></i><span>Histórico</span>
@@ -138,318 +139,222 @@
 
     <!-- MAIN -->
     <main class="flex-1 min-h-screen lg:ml-72">
-      <!-- CONTROLES (mobile) -->
-      <div class="lg:hidden sticky top-[49px] z-30 bg-white border-b">
+      <!-- CONTROLES (mobile sticky) -->
+      <div class="lg:hidden sticky top-[49px] z-40 bg-white border-b">
         <div class="flex items-center gap-2 p-2">
-          <button id="mPrev" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Dia anterior"><i class="bi bi-chevron-left"></i></button>
-          <button id="mToday" class="p-2 rounded-xl border hover:bg-slate-50"><i class="bi bi-calendar3"></i></button>
+          <button id="mPrev" class="tap p-2 rounded-xl border hover:bg-slate-50" aria-label="Dia anterior"><i class="bi bi-chevron-left"></i></button>
+          <button id="mToday" class="tap p-2 rounded-xl border hover:bg-slate-50" aria-label="Hoje"><i class="bi bi-calendar3"></i></button>
           <div id="mobileDateLabel" class="flex-1 text-center font-medium">—</div>
-          <button id="mNext" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Próximo dia"><i class="bi bi-chevron-right"></i></button>
+          <button id="mNext" class="tap p-2 rounded-xl border hover:bg-slate-50" aria-label="Próximo dia"><i class="bi bi-chevron-right"></i></button>
         </div>
       </div>
 
-      <!-- WEEK STRIP (8 dias / 4 por página) -->
-      <section class="border-b bg-white">
-        <div class="px-3 lg:px-6 py-3 flex items-center gap-2">
-          <button id="daysPrev" class="p-2 rounded-xl border hover:bg-slate-50"><i class="bi bi-chevron-left"></i></button>
-          <div id="weekStrip" class="grid grid-cols-4 gap-2 flex-1"></div>
-          <button id="daysNext" class="p-2 rounded-xl border hover:bg-slate-50"><i class="bi bi-chevron-right"></i></button>
-        </div>
-        <div class="px-3 lg:px-6 pb-3 text-xs text-slate-500">Selecione o dia (somente últimos 8 dias).</div>
-      </section>
-
       <!-- FILTROS -->
       <section class="px-3 lg:px-6 py-3 border-b bg-white">
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
-          <input id="searchClient" class="col-span-2 md:col-span-2 border rounded-xl px-3 py-2 text-sm" placeholder="Buscar por cliente…" />
-          <input id="filterDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
-          <select id="filterService" class="border rounded-xl px-3 py-2 text-sm">
+        <div class="grid grid-cols-2 md:grid-cols-7 gap-2">
+          <input id="fDate" type="date" class="border rounded-xl px-3 py-2 text-sm" />
+          <input id="fClient" class="col-span-1 md:col-span-2 border rounded-xl px-3 py-2 text-sm" placeholder="Buscar cliente…" />
+          <select id="fService" class="border rounded-xl px-3 py-2 text-sm">
             <option value="">Todos os serviços</option>
           </select>
-          <button id="clearFilters" class="px-3 py-2 border rounded-xl text-sm"><i class="bi bi-x-circle me-1"></i>Limpar</button>
+          <select id="fStatus" class="border rounded-xl px-3 py-2 text-sm">
+            <option value="">Todos os status</option>
+            <option value="done">Concluído</option>
+            <option value="canceled">Cancelado</option>
+            <option value="noshow">No-show</option>
+          </select>
+          <button id="btnClear" class="px-3 py-2 border rounded-xl text-sm"><i class="bi bi-x-circle me-1"></i>Limpar</button>
+          <button id="btnExport" class="px-3 py-2 border rounded-xl text-sm"><i class="bi bi-download me-1"></i>CSV</button>
         </div>
       </section>
 
-      <!-- CONTEÚDO -->
+      <!-- LISTA (cards responsivos) -->
       <section class="p-3 lg:p-6">
-        <div class="grid lg:grid-cols-12 gap-4">
-          <div class="lg:col-span-8">
-            <div class="p-3 border rounded-2xl bg-white shadow-soft">
-              <div class="flex items-center justify-between">
-                <div class="font-medium">Histórico do dia</div>
-                <div class="text-xs text-slate-500" id="histDateLabel">—</div>
-              </div>
-              <div id="historyList" class="mt-3 space-y-2"></div>
-              <div id="emptyState" class="hidden p-6 text-center text-slate-500 border rounded-2xl">Nenhum atendimento concluído para este dia.</div>
-            </div>
+        <div class="p-3 md:p-4 border rounded-2xl bg-white shadow-soft">
+          <div class="flex items-center justify-between">
+            <div class="font-medium">Histórico do dia</div>
+            <div id="dayLabel" class="text-xs text-slate-500">—</div>
           </div>
-          <div class="lg:col-span-4">
-            <div class="p-4 border rounded-2xl bg-white shadow-soft">
-              <div class="flex items-center justify-between">
-                <div class="font-medium">Resumo do dia</div>
-                <button id="exportCSV" class="px-3 py-2 border rounded-xl text-sm"><i class="bi bi-download me-1"></i>Exportar CSV</button>
-              </div>
-              <div class="grid grid-cols-2 gap-2 mt-3">
-                <div class="p-3 rounded-xl border bg-brand-50 border-brand-100">
-                  <div class="text-xs text-brand-800">Atendimentos</div>
-                  <div id="kpiCount" class="text-lg font-semibold">—</div>
-                </div>
-                <div class="p-3 rounded-xl border">
-                  <div class="text-xs text-slate-500">Ticket médio</div>
-                  <div id="kpiTicket" class="text-lg font-semibold">R$ —</div>
-                </div>
-                <div class="p-3 rounded-xl border col-span-2">
-                  <div class="text-xs text-slate-500">Receita total</div>
-                  <div id="kpiRevenue" class="text-xl font-semibold">R$ —</div>
-                </div>
-              </div>
-              <div class="mt-4">
-                <div class="text-sm text-slate-600 mb-2">Top clientes do dia</div>
-                <div id="topClients" class="space-y-2"></div>
-              </div>
-            </div>
-          </div>
+          <div id="histList" class="mt-3 space-y-2"></div>
+          <div id="emptyState" class="hidden p-6 text-center text-slate-500 border rounded-2xl">Nada encontrado para este filtro.</div>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- DRAWER DETALHES (leitura) -->
-  <div id="apptDrawer" class="fixed inset-0 z-[60] hidden">
-    <div class="absolute inset-0 bg-black/40" data-close-drawer></div>
-    <div class="absolute right-0 top-0 h-full w-full sm:w-[520px] bg-white shadow-xl flex flex-col rounded-l-2xl">
+  <!-- SHEET DETALHES (read-only) -->
+  <div id="sheet" class="fixed inset-0 z-[60] hidden">
+    <div class="absolute inset-0 bg-black/40" data-close-sheet></div>
+    <div class="absolute right-0 top-0 h-full w-full sm:w-[520px] bg-white shadow-xl flex flex-col rounded-l-2xl animate-slideIn">
       <div class="px-4 py-3 border-b flex items-center justify-between">
-        <div class="font-semibold">Detalhes do Atendimento</div>
-        <button class="p-2 rounded-xl border hover:bg-slate-50" data-close-drawer><i class="bi bi-x-lg"></i></button>
+        <div class="font-semibold">Detalhes</div>
+        <button class="tap p-2 rounded-xl border hover:bg-slate-50" data-close-sheet aria-label="Fechar"><i class="bi bi-x-lg"></i></button>
       </div>
-      <div class="flex-1 overflow-y-auto p-4" id="drawerContent"></div>
-      <div class="border-t p-3 flex gap-2 sticky bottom-0 bg-white">
-        <button class="ml-auto px-3 py-2 border rounded-xl" data-close-drawer>Fechar</button>
+      <div class="flex-1 overflow-y-auto p-4" id="sheetContent"></div>
+      <div class="border-t p-3 flex gap-2 bg-white">
+        <button class="px-3 py-2 border rounded-xl" data-close-sheet>Fechar</button>
       </div>
     </div>
   </div>
 
   <!-- =================== JS =================== -->
   <script>
-    /* ======= API (AJAX-ready) ======= */
-    const API = {
-      async getServices(barberId){
-        try{ const r = await fetch(`/api/barbers/${barberId}/services`); if(!r.ok) throw 0; return await r.json(); }catch{ return SERVICES; }
-      },
-      async getAppointments(barberId, from, to){
-        try{ const r = await fetch(`/api/barbers/${barberId}/appointments?from=${from}&to=${to}&status=done`); if(!r.ok) throw 0; return await r.json(); }
-        catch{ return APPOINTMENTS.filter(a=> a.date>=from && a.date<=to && a.status==='done'); }
-      },
-      async getClient(id){
-        try{ const r = await fetch(`/api/clients/${id}`); if(!r.ok) throw 0; return await r.json(); }catch{ return CLIENTS.find(c=>c.id===id) }
-      }
-    };
-
-    /* ======= Mock (fallback) ======= */
-    const BARBER = { id: 'b1', name: 'Carlos Silva' };
+    /* ======= Mock / pronto para backend ======= */
+    const BARBER = { id:'b1', name:'Carlos Silva' };
     const SERVICES = [
-      { id: 'cut', name: 'Corte', duration: 40, price: 55, color:'#4a82ff' },
-      { id: 'beard', name: 'Barba', duration: 30, price: 40, color:'#22c55e' },
-      { id: 'combo', name: 'Combo Corte + Barba', duration: 70, price: 85, color:'#f59e0b' },
-      { id: 'color', name: 'Coloração', duration: 50, price: 120, color:'#ef4444' },
+      { id:'cut', name:'Corte', price:55, color:'#4a82ff' },
+      { id:'beard', name:'Barba', price:40, color:'#22c55e' },
+      { id:'combo', name:'Combo', price:85, color:'#f59e0b' },
+      { id:'color', name:'Coloração', price:120, color:'#ef4444' },
     ];
     const CLIENTS = [
-      { id:'c1', name:'João Pedro', phone:'+55 11 90000-0001', member:true, since:'2024-04-12', visits:['2025-08-11','2025-08-28','2025-09-15','2025-10-01'], purchases:[{product:'Pomada Modeladora', date:'2025-09-23', price:49.9}], habits:['Corte a cada 3 semanas','Prefere máquina #1'], notes:'Gosta de degradê baixo.' },
-      { id:'c2', name:'Matheus Lima', phone:'+55 11 90000-0002', member:false, since:'2023-11-01', visits:['2025-07-05','2025-09-10'], purchases:[], habits:['Barba quinzenal'], notes:'Sensível na pele do pescoço.' },
-      { id:'c3', name:'Rafael Souza', phone:'+55 11 90000-0003', member:true, since:'2022-06-20', visits:['2025-06-01','2025-07-01','2025-08-01','2025-09-01'], purchases:[{product:'Óleo para Barba', date:'2025-08-02', price:39.9}], habits:['Combo mensal'], notes:'' },
+      { id:'c1', name:'João Pedro', phone:'+55 11 90000-0001', member:true },
+      { id:'c2', name:'Matheus Lima', phone:'+55 11 90000-0002', member:false },
+      { id:'c3', name:'Rafael Souza', phone:'+55 11 90000-0003', member:true },
     ];
-    let APPOINTMENTS = [
-      { id:'a1', clientId:'c1', serviceId:'cut',  date:'2025-10-14', start:'09:00', duration:40, status:'done', notes:'', paid:55 },
-      { id:'a2', clientId:'c2', serviceId:'beard',date:'2025-10-14', start:'10:00', duration:30, status:'done', notes:'Barba com toalha quente', paid:40 },
-      { id:'a3', clientId:'c3', serviceId:'combo',date:'2025-10-15', start:'11:00', duration:70, status:'done', notes:'Fidelidade', paid:85 },
-      { id:'a4', clientId:'c1', serviceId:'color',date:'2025-10-15', start:'15:30', duration:50, status:'scheduled', notes:'', paid:0 },
-      { id:'a5', clientId:'c1', serviceId:'cut',  date:'2025-10-15', start:'17:00', duration:40, status:'done', notes:'', paid:55 }
+    const TODAY = '2025-10-15';
+    const HISTORY = [
+      { id:'h1', date:'2025-10-15', time:'09:00', duration:40, clientId:'c1', serviceId:'cut', status:'done',   paid:55, notes:'Degradê baixo' },
+      { id:'h2', date:'2025-10-15', time:'10:30', duration:30, clientId:'c2', serviceId:'beard', status:'done', paid:40, notes:'Toalha quente' },
+      { id:'h3', date:'2025-10-15', time:'12:00', duration:70, clientId:'c3', serviceId:'combo', status:'canceled', paid:0, notes:'Cliente avisou' },
+      { id:'h4', date:'2025-10-14', time:'17:00', duration:40, clientId:'c1', serviceId:'cut', status:'done',   paid:55, notes:'' },
+      { id:'h5', date:'2025-10-13', time:'11:00', duration:30, clientId:'c2', serviceId:'beard', status:'noshow',paid:0, notes:'Não atendeu' },
     ];
 
-    /* ======= Estado & Utils ======= */
-    let currentDate = new Date('2025-10-15T12:00:00');
-    let dayPagerIndex = 0; // 0: dias 0..3 | 1: dias 4..7 (janela retroativa)
-
-    const pad = n=> String(n).padStart(2,'0');
-    const fmtDateISO = d=> `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-    const parseISO = s=> { const [Y,M,D] = s.split('-').map(Number); return new Date(Y, M-1, D) };
-    const addDays = (d,n)=> { const x=new Date(d); x.setDate(x.getDate()+n); return x };
-    const addMinutes = (time, minutes)=> { const [h,m]=time.split(':').map(Number); const t=h*60+m+minutes; return `${pad(Math.floor(t/60))}:${pad(t%60)}` };
-    const currency = v=> v.toLocaleString('pt-BR',{style:'currency', currency:'BRL'});
+    /* ======= Utils ======= */
     const $ = sel => document.querySelector(sel);
+    const pad = n=> String(n).padStart(2,'0');
+    const currency = v => v.toLocaleString('pt-BR',{ style:'currency', currency:'BRL' });
+    const fmtDate = s => s.split('-').reverse().join('/');
+    const addDays = (s, n)=>{ const d=new Date(s); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10) };
 
     /* ======= Sidebar mobile ======= */
     $('#openSidebar')?.addEventListener('click', ()=> $('#sidebarSheet').classList.remove('hidden'));
     document.querySelectorAll('[data-close-sheet]').forEach(b=> b.addEventListener('click', ()=> $('#sidebarSheet').classList.add('hidden')));
 
-    /* ======= Week strip (últimos 8 dias / 4 por página) ======= */
-    function renderWeekStrip(){
-      const cont = $('#weekStrip'); cont.innerHTML='';
-      const today = new Date('2025-10-15'); // referência
-      const daysBack = Array.from({length:8}, (_,i)=> addDays(today, -i)); // 0..7 dias para trás
-      const ordered = daysBack.reverse(); // do mais antigo ao mais recente
-      const start = dayPagerIndex*4; const slice = ordered.slice(start, start+4);
-
-      slice.forEach(d=>{
-        const iso = fmtDateISO(d); const isActive = iso===fmtDateISO(currentDate);
-        const btn = document.createElement('button');
-        btn.className = `rounded-2xl border w-full py-3 ${isActive?'bg-brand-50 border-brand-200 text-brand-900 shadow-soft':'hover:bg-slate-50'}`;
-        btn.innerHTML = `<div class='text-[10px] uppercase text-slate-500'>${d.toLocaleDateString('pt-BR',{weekday:'short'})}</div><div class='font-semibold'>${pad(d.getDate())}/${pad(d.getMonth()+1)}</div>`;
-        btn.addEventListener('click',()=>{ currentDate=d; syncDateControls(); renderAll();});
-        const cell = document.createElement('div'); cell.className='col-span-1'; cell.appendChild(btn); cont.appendChild(cell);
-      });
-      $('#daysPrev').disabled = dayPagerIndex===0;
-      $('#daysNext').disabled = dayPagerIndex===1;
-    }
-    $('#daysPrev')?.addEventListener('click', ()=>{ if(dayPagerIndex>0){ dayPagerIndex--; renderWeekStrip(); }});
-    $('#daysNext')?.addEventListener('click', ()=>{ if(dayPagerIndex<1){ dayPagerIndex++; renderWeekStrip(); }});
-
-    /* ======= Controles de data ======= */
-    function syncDateControls(){
-      $('#mobileDateLabel') && ($('#mobileDateLabel').textContent = currentDate.toLocaleDateString('pt-BR',{weekday:'short', day:'2-digit', month:'2-digit'}));
-      $('#histDateLabel').textContent = currentDate.toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' });
-      $('#filterDate').value = fmtDateISO(currentDate);
-    }
-    $('#mToday')?.addEventListener('click', ()=>{ currentDate = new Date('2025-10-15'); syncDateControls(); renderAll(); });
-    $('#mPrev')?.addEventListener('click', ()=>{ const min=addDays(new Date('2025-10-15'),-7); if(currentDate>min){ currentDate=addDays(currentDate,-1); if(dayPagerIndex===1 && (new Date('2025-10-15')-currentDate) < (4*86400000)) dayPagerIndex=0; } syncDateControls(); renderAll(); });
-    $('#mNext')?.addEventListener('click', ()=>{ const max=new Date('2025-10-15'); if(currentDate<max){ currentDate=addDays(currentDate,1); if(dayPagerIndex===0 && (new Date('2025-10-15')-currentDate) <= (3*86400000)) dayPagerIndex=1; } syncDateControls(); renderAll(); });
-
     /* ======= Filtros ======= */
-    const filterService = $('#filterService');
-    const searchClient = $('#searchClient');
-    const filterDate = $('#filterDate');
-    [filterService, searchClient].forEach(el=> el && el.addEventListener('input', renderHistory));
-    filterDate?.addEventListener('change', ()=>{ currentDate = parseISO(filterDate.value); syncDateControls(); renderAll(); });
-    $('#clearFilters')?.addEventListener('click', ()=>{ searchClient.value=''; filterService.value=''; renderHistory(); });
+    const fDate = $('#fDate');
+    const fClient = $('#fClient');
+    const fService = $('#fService');
+    const fStatus = $('#fStatus');
 
-    /* ======= Dados ======= */
+    function loadServiceFilter(){ SERVICES.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=s.name; fService.appendChild(o); }); }
+
+    [fDate, fClient, fService, fStatus].forEach(el=> el.addEventListener('input', renderList));
+    $('#btnClear').addEventListener('click', ()=>{ fDate.value=TODAY; fClient.value=''; fService.value=''; fStatus.value=''; renderList(); });
+
+    // Mobile prev/next/today
+    $('#mToday').addEventListener('click', ()=>{ fDate.value=TODAY; renderList(); });
+    $('#mPrev').addEventListener('click', ()=>{ fDate.value = addDays(fDate.value||TODAY, -1); renderList(); });
+    $('#mNext').addEventListener('click', ()=>{ fDate.value = addDays(fDate.value||TODAY, 1); renderList(); });
+
+    /* ======= Lookup ======= */
     const getClient = id => CLIENTS.find(c=> c.id===id);
     const getService = id => SERVICES.find(s=> s.id===id);
 
-    function getDoneForDay(date){
-      const iso = fmtDateISO(date);
-      let list = APPOINTMENTS.filter(a=> a.date===iso && a.status==='done');
-      if(filterService?.value) list = list.filter(a=> a.serviceId===filterService.value);
-      if(searchClient?.value){ const q=searchClient.value.toLowerCase(); list=list.filter(a=> getClient(a.clientId).name.toLowerCase().includes(q)); }
-      list.sort((a,b)=> a.start.localeCompare(b.start));
-      return list;
+    /* ======= Export ======= */
+    function toCSV(rows){
+      const head = 'Data,Hora,Cliente,Serviço,Status,Valor';
+      const body = rows.map(r=> [r.date, r.time, getClient(r.clientId)?.name||'', getService(r.serviceId)?.name||'', r.status, r.paid].join(','));
+      return [head, ...body].join('\n');
+    }
+    $('#btnExport').addEventListener('click', ()=>{
+      const rows = filterRows();
+      const blob = new Blob([toCSV(rows)], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob); const a=document.createElement('a');
+      a.href=url; a.download=`historico_${fDate.value||TODAY}.csv`; a.click(); URL.revokeObjectURL(url);
+    });
+
+    /* ======= Filtro aplicado ======= */
+    function filterRows(){
+      const date = fDate.value || TODAY;
+      const q = (fClient.value||'').toLowerCase();
+      let rows = HISTORY.filter(r=> r.date===date);
+      if(q) rows = rows.filter(r=> (getClient(r.clientId)?.name||'').toLowerCase().includes(q));
+      if(fService.value) rows = rows.filter(r=> r.serviceId===fService.value);
+      if(fStatus.value) rows = rows.filter(r=> r.status===fStatus.value);
+      rows.sort((a,b)=> a.time.localeCompare(b.time));
+      return rows;
     }
 
     /* ======= Render ======= */
-    function renderHistory(){
-      const cont = $('#historyList'); cont.innerHTML='';
-      const list = getDoneForDay(currentDate);
-      $('#emptyState').classList.toggle('hidden', list.length>0);
-      if(list.length===0){ updateKPIs([]); renderTopClients([]); return; }
+    function statusPill(st){
+      if(st==='done') return "bg-emerald-50 text-emerald-800 border-emerald-200";
+      if(st==='canceled') return "bg-rose-50 text-rose-800 border-rose-200";
+      if(st==='noshow') return "bg-amber-50 text-amber-800 border-amber-200";
+      return "bg-slate-50 text-slate-700 border-slate-200";
+    }
 
-      list.forEach((a,i)=>{
-        const c=getClient(a.clientId); const s=getService(a.serviceId); const end=addMinutes(a.start,a.duration);
-        const row=document.createElement('div'); row.className='p-3 border rounded-2xl bg-white shadow-soft animate-fadeUp'; row.style.animationDelay=`${i*0.03}s`;
+    function renderList(){
+      const date = fDate.value || TODAY;
+      $('#dayLabel').textContent = new Date(date).toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' });
+      $('#mobileDateLabel').textContent = new Date(date).toLocaleDateString('pt-BR',{weekday:'short', day:'2-digit', month:'2-digit'});
+
+      const cont = $('#histList'); cont.innerHTML='';
+      const rows = filterRows();
+      $('#emptyState').classList.toggle('hidden', rows.length>0);
+      if(rows.length===0) return;
+
+      rows.forEach((r,i)=>{
+        const c=getClient(r.clientId); const s=getService(r.serviceId);
+        const row=document.createElement('div'); row.className='p-3 border rounded-2xl bg-white shadow-soft animate-fadeUp'; row.style.animationDelay=`${i*0.02}s`;
         row.innerHTML = `
           <div class='flex items-center justify-between'>
-            <div class='text-xs text-slate-500'>${a.start} - ${end}</div>
-            <span class='px-2 py-0.5 text-xs rounded-xl border bg-emerald-50 text-emerald-800 border-emerald-200'>Concluído</span>
+            <div class='text-xs text-slate-500'>${fmtDate(r.date)} • ${r.time} • ${r.duration} min</div>
+            <span class='px-2 py-0.5 text-xs rounded-xl border ${statusPill(r.status)}'>${ r.status==='done'?'Concluído': r.status==='canceled'?'Cancelado':'No-show' }</span>
           </div>
           <div class='mt-2 flex items-center gap-3'>
             <div class='w-10 h-10 rounded-full grid place-items-center text-brand-800 border' style='background:rgba(74,130,255,.08); border-color:rgba(74,130,255,.25)'>${c.name.split(' ').map(p=>p[0]).slice(0,2).join('')}</div>
             <div class='min-w-0'>
-              <div class='font-medium truncate'>${c.name} ${c.member?`<span class='ml-2 px-2 py-0.5 text-xs rounded-xl bg-brand-50 text-brand-800 border border-brand-100'>Assinante</span>`:''}</div>
-              <div class='text-sm text-slate-500'>${s.name} • ${a.duration} min</div>
+              <div class='font-medium truncate'>${c.name} ${c.member?`<span class='ml-2 px-2 py-0.5 text-[11px] rounded-xl bg-brand-50 text-brand-800 border border-brand-100'>Assinante</span>`:''}</div>
+              <div class='text-sm text-slate-500'>${s.name}</div>
             </div>
             <div class='ml-auto text-right'>
-              <div class='text-sm'>${currency(a.paid || s.price)}</div>
-              <button class='mt-1 px-2 py-1 rounded-xl border hover:bg-slate-50 text-xs' data-open='${a.id}'><i class='bi bi-eye me-1'></i>Ver</button>
+              <div class='text-sm'>${currency(r.paid||0)}</div>
+              <button class='mt-1 px-2 py-1 rounded-xl border hover:bg-slate-50 text-xs' data-open='${r.id}'><i class='bi bi-eye me-1'></i>Ver</button>
             </div>
           </div>`;
         cont.appendChild(row);
       });
 
-      document.querySelectorAll('[data-open]').forEach(b=> b.addEventListener('click', ()=> openAppt(b.getAttribute('data-open'))));
-      updateKPIs(list); renderTopClients(list);
+      document.querySelectorAll('[data-open]').forEach(b=> b.addEventListener('click', ()=> openSheet(b.getAttribute('data-open'))));
     }
 
-    function updateKPIs(list){
-      const revenue = list.reduce((acc,a)=> acc + (a.paid || getService(a.serviceId).price), 0);
-      const ticket = list.length? revenue / list.length : 0;
-      $('#kpiCount').textContent = list.length;
-      $('#kpiRevenue').textContent = revenue? currency(revenue) : 'R$ —';
-      $('#kpiTicket').textContent = ticket? currency(ticket) : 'R$ —';
-    }
-
-    function renderTopClients(list){
-      const cont = $('#topClients'); cont.innerHTML='';
-      const map = new Map();
-      list.forEach(a=>{ const k=a.clientId; const v=(a.paid || getService(a.serviceId).price); map.set(k,(map.get(k)||0)+v); });
-      const arr = [...map.entries()].sort((a,b)=> b[1]-a[1]).slice(0,5);
-      if(arr.length===0){ cont.innerHTML='<div class="text-sm text-slate-500">Sem dados.</div>'; return }
-      arr.forEach(([clientId, total])=>{
-        const c=getClient(clientId);
-        const row=document.createElement('div'); row.className='flex items-center gap-2 border rounded-xl p-2';
-        row.innerHTML = `<div class='w-8 h-8 rounded-full grid place-items-center text-brand-800 border' style='background:rgba(74,130,255,.08); border-color:rgba(74,130,255,.25)'>${c.name.split(' ').map(p=>p[0]).slice(0,2).join('')}</div>
-                         <div class='text-sm truncate'>${c.name}</div>
-                         <div class='ml-auto font-medium'>${currency(total)}</div>`;
-        cont.appendChild(row);
-      });
-    }
-
-    /* ======= Drawer (read-only) ======= */
-    const drawer = $('#apptDrawer');
-    function openAppt(id){
-      const a = APPOINTMENTS.find(x=> x.id===id); const c = CLIENTS.find(x=> x.id===a.clientId); const s = SERVICES.find(x=> x.id===a.serviceId);
-      const end = addMinutes(a.start,a.duration);
-      $('#drawerContent').innerHTML = `
+    /* ======= Sheet Detalhes ======= */
+    const sheet = document.getElementById('sheet');
+    function openSheet(id){
+      const r = HISTORY.find(x=> x.id===id); const c=getClient(r.clientId); const s=getService(r.serviceId);
+      document.getElementById('sheetContent').innerHTML = `
         <div class='flex items-center gap-3'>
           <div class='w-12 h-12 rounded-full grid place-items-center text-brand-800 border' style='background:rgba(74,130,255,.08); border-color:rgba(74,130,255,.25)'>${c.name.split(' ').map(p=>p[0]).slice(0,2).join('')}</div>
           <div>
             <div class='font-semibold'>${c.name} ${c.member?`<span class=\"ml-2 px-2 py-0.5 text-xs rounded-xl bg-brand-50 text-brand-800 border border-brand-100\">Assinante</span>`:''}</div>
             <div class='text-xs text-slate-500'>${c.phone||'—'}</div>
           </div>
-          <span class='ml-auto px-2 py-0.5 text-xs rounded-xl border bg-emerald-50 text-emerald-800 border-emerald-200'>Concluído</span>
+          <span class='ml-auto px-2 py-0.5 text-xs rounded-xl border ${statusPill(r.status)}'>${ r.status==='done'?'Concluído': r.status==='canceled'?'Cancelado':'No-show' }</span>
         </div>
         <div class='grid grid-cols-2 gap-3 mt-3'>
-          <div class='p-3 border rounded-xl'><div class='text-xs text-slate-500'>Data</div><div class='font-medium'>${a.date.split('-').reverse().join('/')}</div></div>
-          <div class='p-3 border rounded-xl'><div class='text-xs text-slate-500'>Horário</div><div class='font-medium'>${a.start} - ${end}</div></div>
-          <div class='col-span-2 p-3 border rounded-xl'><div class='text-xs text-slate-500'>Serviço</div><div class='font-medium'><span class='inline-block w-2 h-2 rounded-full mr-2' style='background:${s.color}'></span>${s.name} <span class='text-slate-500'>• ${a.duration} min</span></div></div>
-          <div class='col-span-2 p-3 border rounded-xl'><div class='text-xs text-slate-500'>Valor pago</div><div class='font-semibold'>${currency(a.paid || s.price)}</div></div>
+          <div class='p-3 border rounded-xl'><div class='text-xs text-slate-500'>Data</div><div class='font-medium'>${fmtDate(r.date)}</div></div>
+          <div class='p-3 border rounded-xl'><div class='text-xs text-slate-500'>Horário</div><div class='font-medium'>${r.time} • ${r.duration} min</div></div>
+          <div class='col-span-2 p-3 border rounded-xl'><div class='text-xs text-slate-500'>Serviço</div><div class='font-medium'><span class='inline-block w-2 h-2 rounded-full mr-2' style='background:${s.color}'></span>${s.name}</div></div>
+          <div class='col-span-2 p-3 border rounded-xl'><div class='text-xs text-slate-500'>Valor pago</div><div class='font-semibold'>${currency(r.paid||0)}</div></div>
         </div>
         <div class='p-3 border rounded-xl mt-3'>
           <div class='text-sm font-medium mb-2'>Observações</div>
-          <div class='text-sm'>${a.notes || '—'}</div>
+          <div class='text-sm'>${r.notes||'—'}</div>
         </div>`;
-      drawer.classList.remove('hidden');
-      document.querySelectorAll('[data-close-drawer]').forEach(b=> b.onclick = ()=> drawer.classList.add('hidden'));
+      sheet.classList.remove('hidden');
+      document.querySelectorAll('[data-close-sheet]').forEach(b=> b.onclick = ()=> sheet.classList.add('hidden'));
     }
-
-    /* ======= Export CSV ======= */
-    function exportCSV(rows){
-      const csv = ['Data,Inicio,Fim,Cliente,Serviço,Duração,Valor'];
-      rows.forEach(a=>{
-        const c=getClient(a.clientId); const s=getService(a.serviceId);
-        const end=addMinutes(a.start,a.duration);
-        csv.push(`${a.date},${a.start},${end},"${c.name}","${s.name}",${a.duration},${(a.paid||s.price)}`);
-      });
-      const blob = new Blob([csv.join('\n')], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download=`historico_${fmtDateISO(currentDate)}.csv`; a.click(); URL.revokeObjectURL(url);
-    }
-    document.getElementById('exportCSV').addEventListener('click', ()=>{
-      const list = getDoneForDay(currentDate); if(list.length) exportCSV(list);
-    });
 
     /* ======= Init ======= */
-    function loadServiceFilters(){
-      const sel = document.getElementById('filterService');
-      SERVICES.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=s.name; sel.appendChild(o); });
-    }
-    function renderAll(){ renderWeekStrip(); renderHistory(); }
     function init(){
       document.getElementById('barberName').textContent = BARBER.name;
-      loadServiceFilters();
-      syncDateControls();
-      // Ajustar pager conforme data
-      const today = new Date('2025-10-15');
-      if((today - currentDate) <= (3*86400000)) dayPagerIndex = 1; else dayPagerIndex = 0;
-      renderAll();
+      loadServiceFilter();
+      document.getElementById('fDate').value = TODAY;
+      document.getElementById('mobileDateLabel').textContent = new Date(TODAY).toLocaleDateString('pt-BR',{weekday:'short', day:'2-digit', month:'2-digit'});
+      document.getElementById('dayLabel').textContent = new Date(TODAY).toLocaleDateString('pt-BR',{weekday:'long', day:'2-digit', month:'2-digit', year:'numeric'});
+      renderList();
     }
     init();
   </script>
