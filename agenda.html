@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>thynkBarber • Agenda (Barbeiro)</title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              25:'#f8faff',50:'#f3f7ff',100:'#e6efff',200:'#d8e6ff',300:'#b9d0ff',
+              400:'#93b4ff',500:'#4a82ff',600:'#3a6af4',700:'#2e54c6',800:'#2746a3',900:'#203a85'
+            }
+          },
+          boxShadow:{ soft:'0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.08)' },
+          borderRadius:{ '2xl':'1rem' },
+          keyframes:{
+            fadeUp:{ from:{opacity:0, transform:'translateY(6px)'} , to:{opacity:1, transform:'translateY(0)'} },
+            slideIn:{ from:{transform:'translateX(-100%)'}, to:{transform:'translateX(0)'} }
+          },
+          animation:{ fadeUp: 'fadeUp .28s ease both', slideIn:'slideIn .25s ease both' }
+        }
+      }
+    }
+  </script>
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    *{ box-sizing:border-box }
+    html, body{ overflow-x:hidden; background:#fff }
+    .no-scrollbar::-webkit-scrollbar{ display:none }
+    .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none }
+  </style>
+</head>
+<body class="bg-white text-slate-800">
+
+  <!-- TOPBAR (apenas mobile) -->
+  <header class="lg:hidden sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
+    <div class="flex items-center gap-2 p-3">
+      <button id="openSidebar" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Abrir menu">
+        <i class="bi bi-list"></i>
+      </button>
+      <div class="font-medium">Agenda</div>
+      <div class="ml-auto text-xs px-2 py-1 rounded bg-slate-100">Light</div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- SIDEBAR (desktop fixa) -->
+    <aside class="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 border-r bg-white z-40">
+      <div class="flex-1 flex flex-col">
+        <div class="px-5 py-5 border-b flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-brand-600 text-white grid place-items-center font-bold">tb</div>
+          <div>
+            <div class="font-bold">thynkBarber</div>
+            <div class="text-xs text-slate-500">Painel do Barbeiro</div>
+          </div>
+        </div>
+        <nav class="px-3 py-3 text-sm overflow-y-auto">
+          <div class="px-3 py-2 text-slate-400 uppercase tracking-wide">Administrativo</div>
+          <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Agendamentos</div>
+          <a href="agenda.html" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-brand-50 text-brand-800 border border-brand-100">
+            <i class="bi bi-calendar3"></i><span>Agendamentos</span>
+          </a>
+          <a href="historico.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-clock-history"></i><span>Histórico</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Finanças</div>
+          <a href="faturamento.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-wallet2"></i><span>Faturamento</span>
+          </a>
+          <a href="metas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-bullseye"></i><span>Metas</span>
+          </a>
+          <a href="vendas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-bag"></i><span>Vendas</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Perfil</div>
+          <div class="mx-3 p-3 border rounded-xl bg-slate-50">
+            <div class="text-xs text-slate-500">Barbeiro</div>
+            <div id="barberName" class="font-medium">—</div>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- SIDEBAR (mobile offcanvas) -->
+    <div id="sidebarSheet" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-black/40" data-close-sheet></div>
+      <div class="absolute left-0 top-0 h-full w-[92%] max-w-[340px] bg-white border-r shadow-xl animate-slideIn">
+        <div class="flex items-center justify-between px-4 py-4 border-b">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand-600 text-white grid place-items-center font-bold">tb</div>
+            <div class="font-semibold">thynkBarber</div>
+          </div>
+          <button class="p-2 rounded-xl border hover:bg-slate-50" data-close-sheet aria-label="Fechar">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <nav class="p-3 text-sm">
+          <div class="px-3 py-2 text-slate-400 uppercase tracking-wide">Administrativo</div>
+          <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Agendamentos</div>
+          <a href="agenda.html" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-brand-50 text-brand-800 border border-brand-100">
+            <i class="bi bi-calendar3"></i><span>Agendamentos</span>
+          </a>
+          <a href="historico.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-clock-history"></i><span>Histórico</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Finanças</div>
+          <a href="faturamento.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-wallet2"></i><span>Faturamento</span>
+          </a>
+          <a href="metas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-bullseye"></i><span>Metas</span>
+          </a>
+          <a href="vendas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-bag"></i><span>Vendas</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <main class="flex-1 min-h-screen lg:ml-72">
+      <!-- CONTROLES DO DIA (mobile) -->
+      <div class="lg:hidden sticky top-[49px] z-30 bg-white border-b">
+        <div class="flex items-center gap-2 p-2">
+          <button id="mPrev" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Dia anterior">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button id="mToday" class="p-2 rounded-xl border hover:bg-slate-50">
+            <i class="bi bi-calendar3"></i>
+          </button>
+          <div id="mobileDateLabel" class="flex-1 text-center font-medium">—</div>
+          <button id="mNext" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Próximo dia">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+          <button id="mNew" class="p-2 rounded-xl bg-brand-600 text-white" title="Novo agendamento">
+            <i class="bi bi-plus-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- WEEK STRIP (8 dias / 4 por página) -->
+      <section class="border-b bg-white">
+        <div class="px-3 lg:px-6 py-3 flex items-center gap-2">
+          <button id="daysPrev" class="p-2 rounded-xl border hover:bg-slate-50"><i class="bi bi-chevron-left"></i></button>
+          <div id="weekStrip" class="grid grid-cols-4 gap-2 flex-1"></div>
+          <button id="daysNext" class="p-2 rounded-xl border hover:bg-slate-50"><i class="bi bi-chevron-right"></i></button>
+        </div>
+        <div class="px-3 lg:px-6 pb-3 text-xs text-slate-500">Agendamento disponível por até 8 dias.</div>
+      </section>
+
+      <!-- FILTROS -->
+      <section class="px-3 lg:px-6 py-3 border-b bg-white">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <select id="filterService" class="w-full border rounded-xl px-3 py-2 text-sm">
+            <option value="">Todos os serviços</option>
+          </select>
+          <select id="filterStatus" class="w-full border rounded-xl px-3 py-2 text-sm">
+            <option value="">Todos os status</option>
+            <option value="scheduled">Agendado</option>
+            <option value="checkedin">Em atendimento</option>
+            <option value="done">Concluído</option>
+            <option value="noshow">Não compareceu</option>
+            <option value="canceled">Cancelado</option>
+          </select>
+          <input id="searchClient" class="col-span-2 border rounded-xl px-3 py-2 text-sm" placeholder="Buscar cliente, serviço…" />
+        </div>
+      </section>
+
+      <!-- CONTEÚDO -->
+      <section class="p-3 lg:p-6">
+        <div class="grid lg:grid-cols-12 gap-4">
+          <div class="lg:col-span-8">
+            <div id="agendaList" class="space-y-2"></div>
+          </div>
+          <div class="lg:col-span-4">
+            <div class="p-4 border rounded-2xl bg-white shadow-soft">
+              <div class="flex items-center justify-between">
+                <div class="font-medium">Resumo do dia</div>
+                <button id="refreshDay" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Atualizar">
+                  <i class="bi bi-arrow-repeat"></i>
+                </button>
+              </div>
+              <div class="grid grid-cols-2 gap-2 mt-3">
+                <div class="p-3 rounded-xl border bg-brand-50 border-brand-100">
+                  <div class="text-xs text-brand-800">Agendamentos</div>
+                  <div id="kpiCount" class="text-lg font-semibold">—</div>
+                </div>
+                <div class="p-3 rounded-xl border">
+                  <div class="text-xs text-slate-500">Ocupação</div>
+                  <div id="kpiOcc" class="text-lg font-semibold">—</div>
+                </div>
+                <div class="p-3 rounded-xl border">
+                  <div class="text-xs text-slate-500">Ticket médio</div>
+                  <div id="kpiTicket" class="text-lg font-semibold">R$ —</div>
+                </div>
+                <div class="p-3 rounded-xl border">
+                  <div class="text-xs text-slate-500">Receita prevista</div>
+                  <div id="kpiRevenue" class="text-lg font-semibold">R$ —</div>
+                </div>
+              </div>
+              <div class="mt-4">
+                <div class="text-sm text-slate-600 mb-2">Próximos horários</div>
+                <div id="nextSlots" class="space-y-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- DRAWER DETALHES -->
+  <div id="apptDrawer" class="fixed inset-0 z-[60] hidden">
+    <div class="absolute inset-0 bg-black/40" data-close-drawer></div>
+    <div class="absolute right-0 top-0 h-full w-full sm:w-[520px] bg-white shadow-xl flex flex-col rounded-l-2xl">
+      <div class="px-4 py-3 border-b flex items-center justify-between">
+        <div class="font-semibold">Detalhes do Agendamento</div>
+        <button class="p-2 rounded-xl border hover:bg-slate-50" data-close-drawer><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="flex-1 overflow-y-auto p-4" id="drawerContent"></div>
+      <div class="border-t p-3 flex gap-2 sticky bottom-0 bg-white">
+        <button id="btnNoShow" class="px-3 py-2 border rounded-xl">No-show</button>
+        <button id="btnCheckin" class="px-3 py-2 border rounded-xl">Iniciar</button>
+        <button id="btnDone" class="ml-auto px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl">Concluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO AGENDAMENTO -->
+  <div id="newApptModal" class="fixed inset-0 z-[70] hidden">
+    <div class="absolute inset-0 bg-black/40" data-close-modal></div>
+    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-[720px] bg-white rounded-2xl shadow-xl">
+      <div class="px-4 py-3 border-b flex items-center justify-between">
+        <div class="font-semibold">Novo Agendamento</div>
+        <button class="p-2 rounded-xl border hover:bg-slate-50" data-close-modal><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="space-y-3">
+          <label class="block text-sm">Cliente
+            <input id="fClient" class="mt-1 w-full border rounded-xl px-3 py-2" placeholder="Nome do cliente" />
+          </label>
+          <label class="block text-sm">Serviço
+            <select id="fService" class="mt-1 w-full border rounded-xl px-3 py-2"></select>
+          </label>
+          <label class="block text-sm">Data
+            <input id="fDate" type="date" class="mt-1 w-full border rounded-xl px-3 py-2" />
+          </label>
+        </div>
+        <div class="space-y-3">
+          <label class="block text-sm">Início
+            <input id="fStart" type="time" class="mt-1 w-full border rounded-xl px-3 py-2" />
+          </label>
+          <label class="block text-sm">Duração (min)
+            <input id="fDuration" type="number" min="10" step="5" class="mt-1 w-full border rounded-xl px-3 py-2" />
+          </label>
+          <label class="block text-sm">Observações
+            <textarea id="fNotes" rows="3" class="mt-1 w-full border rounded-xl px-3 py-2" placeholder="Preferências, recados…"></textarea>
+          </label>
+        </div>
+      </div>
+      <div class="p-4 border-t flex items-center gap-2">
+        <button class="px-3 py-2 border rounded-xl" data-close-modal>Cancelar</button>
+        <button id="saveAppt" class="ml-auto px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REAGENDAR -->
+  <div id="resModal" class="fixed inset-0 z-[70] hidden">
+    <div class="absolute inset-0 bg-black/40" data-close-modal2></div>
+    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-[560px] bg-white rounded-2xl shadow-xl">
+      <div class="px-4 py-3 border-b flex items-center justify-between">
+        <div class="font-semibold">Reagendar</div>
+        <button class="p-2 rounded-xl border hover:bg-slate-50" data-close-modal2><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <label class="block text-sm">Data
+          <input id="rDate" type="date" class="mt-1 w-full border rounded-xl px-3 py-2" />
+        </label>
+        <label class="block text-sm">Início
+          <input id="rStart" type="time" class="mt-1 w-full border rounded-xl px-3 py-2" />
+        </label>
+        <label class="block text-sm">Duração
+          <input id="rDuration" type="number" min="10" step="5" class="mt-1 w-full border rounded-xl px-3 py-2" />
+        </label>
+      </div>
+      <div class="p-4 border-t flex items-center gap-2">
+        <button class="px-3 py-2 border rounded-xl" data-close-modal2>Cancelar</button>
+        <button id="saveReschedule" class="ml-auto px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== JS =================== -->
+  <script>
+    /* ======= API (AJAX-ready para Node) ======= */
+    const API = {
+      async getServices(barberId){
+        try{ const r = await fetch(`/api/barbers/${barberId}/services`);
+             if(!r.ok) throw 0; return await r.json(); }
+        catch{ return SERVICES; } // fallback mock
+      },
+      async getAppointments(barberId, from, to){
+        try{ const r = await fetch(`/api/barbers/${barberId}/appointments?from=${from}&to=${to}`);
+             if(!r.ok) throw 0; return await r.json(); }
+        catch{ return APPOINTMENTS.filter(a=> a.date>=from && a.date<=to); }
+      },
+      async getClient(id){
+        try{ const r = await fetch(`/api/clients/${id}`);
+             if(!r.ok) throw 0; return await r.json(); }
+        catch{ return CLIENTS.find(c=>c.id===id) }
+      },
+      async createAppointment(payload){
+        try{ const r = await fetch('/api/appointments',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+             if(!r.ok) throw 0; return await r.json(); }
+        catch{ const id = 'a'+(APPOINTMENTS.length+1); const ap={ id, ...payload }; APPOINTMENTS.push(ap); return ap; }
+      },
+      async updateAppointment(id, payload){
+        try{ const r = await fetch(`/api/appointments/${id}`,{ method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+             if(!r.ok) throw 0; return await r.json(); }
+        catch{ Object.assign(APPOINTMENTS.find(a=>a.id===id)||{}, payload); return payload; }
+      }
+    };
+
+    /* ======= Mock (fallback p/ desenvolvimento) ======= */
+    const BARBER = { id: 'b1', name: 'Carlos Silva' };
+    const SERVICES = [
+      { id: 'cut', name: 'Corte', duration: 40, price: 55, color:'#4a82ff' },
+      { id: 'beard', name: 'Barba', duration: 30, price: 40, color:'#22c55e' },
+      { id: 'combo', name: 'Combo Corte + Barba', duration: 70, price: 85, color:'#f59e0b' },
+      { id: 'color', name: 'Coloração', duration: 50, price: 120, color:'#ef4444' },
+    ];
+    const CLIENTS = [
+      { id:'c1', name:'João Pedro', phone:'+55 11 90000-0001', member:true, since:'2024-04-12',
+        visits:['2025-08-11','2025-08-28','2025-09-15','2025-10-01'], purchases:[{product:'Pomada Modeladora', date:'2025-09-23', price:49.9}],
+        habits:['Corte a cada 3 semanas','Prefere máquina #1'], notes:'Gosta de degradê baixo.' },
+      { id:'c2', name:'Matheus Lima', phone:'+55 11 90000-0002', member:false, since:'2023-11-01',
+        visits:['2025-07-05','2025-09-10'], purchases:[], habits:['Barba quinzenal'], notes:'Sensível na pele do pescoço.' },
+      { id:'c3', name:'Rafael Souza', phone:'+55 11 90000-0003', member:true, since:'2022-06-20',
+        visits:['2025-06-01','2025-07-01','2025-08-01','2025-09-01'], purchases:[{product:'Óleo para Barba', date:'2025-08-02', price:39.9}],
+        habits:['Combo mensal'], notes:'' },
+    ];
+    let APPOINTMENTS = [
+      { id:'a1', clientId:'c1', serviceId:'cut',  date:'2025-10-15', start:'09:00', duration:40, status:'scheduled', notes:'' },
+      { id:'a2', clientId:'c2', serviceId:'beard',date:'2025-10-15', start:'10:00', duration:30, status:'scheduled', notes:'Barba com toalha quente' },
+      { id:'a3', clientId:'c3', serviceId:'combo',date:'2025-10-15', start:'11:00', duration:70, status:'checkedin', notes:'Fidelidade' },
+      { id:'a4', clientId:'c1', serviceId:'color',date:'2025-10-16', start:'15:30', duration:50, status:'scheduled', notes:'' },
+    ];
+
+    /* ======= Estado & Utils ======= */
+    let currentDate = new Date('2025-10-15T12:00:00');
+    let dayPagerIndex = 0; // 0: dias 0..3 | 1: dias 4..7
+    let selectedApptId = null;
+
+    const pad = n=> String(n).padStart(2,'0');
+    const fmtDateISO = d=> `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const parseISO = s=> { const [Y,M,D] = s.split('-').map(Number); return new Date(Y, M-1, D) };
+    const addDays = (d,n)=> { const x=new Date(d); x.setDate(x.getDate()+n); return x };
+    const addMinutes = (time, minutes)=> { const [h,m]=time.split(':').map(Number); const t=h*60+m+minutes; return `${pad(Math.floor(t/60))}:${pad(t%60)}` };
+    const currency = v=> v.toLocaleString('pt-BR',{style:'currency', currency:'BRL'});
+    const $ = sel => document.querySelector(sel);
+
+    /* ======= Sidebar mobile ======= */
+    $('#openSidebar')?.addEventListener('click', ()=> $('#sidebarSheet').classList.remove('hidden'));
+    document.querySelectorAll('[data-close-sheet]').forEach(b=> b.addEventListener('click', ()=> $('#sidebarSheet').classList.add('hidden')));
+
+    /* ======= Week strip (8 dias / 4 por página) ======= */
+    function renderWeekStrip(){
+      const cont = $('#weekStrip'); cont.innerHTML='';
+      const today = new Date('2025-10-15');
+      const days = Array.from({length:8}, (_,i)=> addDays(today, i));
+      const start = dayPagerIndex*4; const slice = days.slice(start, start+4);
+
+      slice.forEach(d=>{
+        const iso = fmtDateISO(d); const isActive = iso===fmtDateISO(currentDate);
+        const btn = document.createElement('button');
+        btn.className = `rounded-2xl border w-full py-3 ${isActive?'bg-brand-50 border-brand-200 text-brand-900 shadow-soft':'hover:bg-slate-50'}`;
+        btn.innerHTML = `
+          <div class="text-[10px] uppercase text-slate-500">${d.toLocaleDateString('pt-BR',{weekday:'short'})}</div>
+          <div class="font-semibold">${pad(d.getDate())}/${pad(d.getMonth()+1)}</div>`;
+        btn.addEventListener('click',()=>{ currentDate=d; syncDateControls(); renderAll();});
+        const cell = document.createElement('div'); cell.className='col-span-1';
+        cell.appendChild(btn); cont.appendChild(cell);
+      });
+
+      $('#daysPrev').disabled = dayPagerIndex===0;
+      $('#daysNext').disabled = dayPagerIndex===1;
+    }
+    $('#daysPrev')?.addEventListener('click', ()=>{ if(dayPagerIndex>0){ dayPagerIndex--; renderWeekStrip(); }});
+    $('#daysNext')?.addEventListener('click', ()=>{ if(dayPagerIndex<1){ dayPagerIndex++; renderWeekStrip(); }});
+
+    /* ======= Controles de data ======= */
+    function syncDateControls(){
+      $('#mobileDateLabel') && ($('#mobileDateLabel').textContent =
+        currentDate.toLocaleDateString('pt-BR',{weekday:'short', day:'2-digit', month:'2-digit'}));
+    }
+    $('#mToday')?.addEventListener('click', ()=>{ currentDate = new Date('2025-10-15'); syncDateControls(); renderAll(); });
+    $('#mPrev')?.addEventListener('click', ()=>{
+      const min=new Date('2025-10-15');
+      if(currentDate>min){ currentDate=addDays(currentDate,-1);
+        if(dayPagerIndex===1 && (currentDate-min)<(4*86400000)) dayPagerIndex=0; }
+      syncDateControls(); renderAll();
+    });
+    $('#mNext')?.addEventListener('click', ()=>{
+      const min=new Date('2025-10-15'); const max=addDays(min,7);
+      if(currentDate<max){ currentDate=addDays(currentDate,1);
+        if(dayPagerIndex===0 && (currentDate-min)>=(4*86400000)) dayPagerIndex=1; }
+      syncDateControls(); renderAll();
+    });
+
+    /* ======= Filtros ======= */
+    const filterService = $('#filterService');
+    const filterStatus  = $('#filterStatus');
+    const searchClient  = $('#searchClient');
+    [filterService,filterStatus,searchClient].forEach(c=> c && c.addEventListener('input', renderAgenda));
+
+    /* ======= Renderização da agenda ======= */
+    const getClient  = id => CLIENTS.find(c=> c.id===id);
+    const getService = id => SERVICES.find(s=> s.id===id);
+    function statusBadge(status){
+      const map={
+        scheduled:['Agendado','bg-slate-100 text-slate-700 border-slate-200'],
+        checkedin:['Em atendimento','bg-amber-50 text-amber-800 border-amber-200'],
+        done:['Concluído','bg-emerald-50 text-emerald-800 border-emerald-200'],
+        noshow:['No-show','bg-rose-50 text-rose-700 border-rose-200'],
+        canceled:['Cancelado','bg-slate-100 text-slate-500 border-slate-200']
+      };
+      const [label,cls] = map[status]||[status,'bg-slate-100'];
+      return `<span class="px-2 py-0.5 text-xs rounded-xl border ${cls}">${label}</span>`;
+    }
+    function getApptsForDay(date){
+      const iso = fmtDateISO(date);
+      let list = APPOINTMENTS.filter(a=> a.date===iso);
+      if(filterService?.value) list = list.filter(a=> a.serviceId===filterService.value);
+      if(filterStatus?.value)  list = list.filter(a=> a.status===filterStatus.value);
+      if(searchClient?.value){ const q=searchClient.value.toLowerCase();
+        list=list.filter(a=> getClient(a.clientId).name.toLowerCase().includes(q)); }
+      list.sort((a,b)=> a.start.localeCompare(b.start));
+      return list;
+    }
+    function renderAgenda(){
+      const cont = $('#agendaList'); cont.innerHTML='';
+      const list = getApptsForDay(currentDate);
+      if(list.length===0){
+        cont.innerHTML = `<div class="p-6 text-center text-slate-500 border rounded-2xl">Sem agendamentos para este dia.</div>`;
+        updateKPIs([]); renderNextSlots([]); return;
+      }
+      list.forEach((a,i)=>{
+        const c=getClient(a.clientId); const s=getService(a.serviceId); const end=addMinutes(a.start,a.duration);
+        const card=document.createElement('div');
+        card.className='p-3 border rounded-2xl bg-white shadow-soft relative animate-fadeUp';
+        card.style.animationDelay = `${i*0.03}s`;
+        card.innerHTML = `
+          <span class="absolute inset-y-0 left-0 w-1.5 rounded-l-2xl" style="background:${s.color}"></span>
+          <div class="flex items-center justify-between">
+            <div class="text-xs text-slate-500">${a.start} - ${end}</div>
+            ${statusBadge(a.status)}
+          </div>
+          <div class="mt-2 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full grid place-items-center text-brand-800 border"
+                 style="background:rgba(74,130,255,.08); border-color:rgba(74,130,255,.25)">
+                 ${c.name.split(' ').map(p=>p[0]).slice(0,2).join('')}
+            </div>
+            <div class="min-w-0">
+              <div class="font-medium truncate">
+                ${c.name} ${c.member?`<span class='ml-2 px-2 py-0.5 text-xs rounded-xl bg-brand-50 text-brand-800 border border-brand-100'>Assinante</span>`:''}
+              </div>
+              <div class="text-sm text-slate-500">${s.name} • ${currency(s.price)}</div>
+            </div>
+            <div class="ml-auto flex items-center gap-2">
+              <button class="p-2 rounded-xl border hover:bg-slate-50" data-quick="${c.phone}" title="Ligar"><i class="bi bi-telephone"></i></button>
+              <button class="px-3 py-2 rounded-xl border hover:bg-slate-50" data-open="${a.id}"><i class="bi bi-eye"></i> Ver</button>
+            </div>
+          </div>`;
+        cont.appendChild(card);
+      });
+      document.querySelectorAll('[data-open]').forEach(b=> b.addEventListener('click', ()=> openAppt(b.getAttribute('data-open'))));
+      document.querySelectorAll('[data-quick]').forEach(b=> b.addEventListener('click', ()=> alert('Iniciar chamada: '+b.getAttribute('data-quick'))));
+      updateKPIs(list); renderNextSlots(list);
+    }
+    function updateKPIs(list){
+      const minutesOpen=9*60;
+      const booked = list.reduce((a,x)=>a+x.duration,0);
+      const occ = Math.round((booked/minutesOpen)*100);
+      const revenue = list.reduce((a,x)=> a + getService(x.serviceId).price, 0);
+      const ticket  = list.length? revenue / list.length : 0;
+      $('#kpiCount').textContent = list.length;
+      $('#kpiOcc').textContent   = isNaN(occ)?'—':occ+'%';
+      $('#kpiRevenue').textContent = revenue?currency(revenue):'R$ —';
+      $('#kpiTicket').textContent  = ticket?currency(ticket):'R$ —';
+    }
+    function renderNextSlots(list){
+      const cont=$('#nextSlots'); cont.innerHTML='';
+      const up=list.filter(a=> ['scheduled','checkedin'].includes(a.status)).slice(0,4);
+      if(up.length===0){ cont.innerHTML = '<div class="text-sm text-slate-500">Nenhum horário próximo.</div>'; return }
+      up.forEach(a=>{
+        const c=getClient(a.clientId); const s=getService(a.serviceId);
+        const row=document.createElement('div'); row.className='flex items-center gap-2 border rounded-xl p-2';
+        row.innerHTML = `
+          <span class="px-2 py-1 text-xs rounded-xl bg-brand-50 text-brand-800 border border-brand-100">${a.start}</span>
+          <div class="text-sm truncate">${c.name} <span class="text-slate-500">• ${s.name}</span></div>
+          <button data-open="${a.id}" class="ml-auto p-2 rounded-xl border hover:bg-slate-50"><i class="bi bi-chevron-right"></i></button>`;
+        row.querySelector('[data-open]').addEventListener('click',()=> openAppt(a.id));
+        cont.appendChild(row);
+      });
+    }
+
+    /* ======= Drawer ======= */
+    const drawer = $('#apptDrawer');
+    function visitsPerMonth(client){
+      const now = new Date('2025-10-15');
+      const recent = (client.visits||[]).filter(v=> (now - parseISO(v)) <= (1000*60*60*24*90)).length;
+      return (recent/3).toFixed(1);
+    }
+    function openAppt(id){
+      const a = APPOINTMENTS.find(x=> x.id===id); selectedApptId=id;
+      const c=getClient(a.clientId); const s=getService(a.serviceId); const end=addMinutes(a.start,a.duration);
+      const last = (c.purchases||[])[0];
+
+      $('#drawerContent').innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full grid place-items-center text-brand-800 border"
+               style="background:rgba(74,130,255,.08); border-color:rgba(74,130,255,.25)">
+               ${c.name.split(' ').map(p=>p[0]).slice(0,2).join('')}
+          </div>
+          <div>
+            <div class="font-semibold">
+              ${c.name} ${c.member?`<span class='ml-2 px-2 py-0.5 text-xs rounded-xl bg-brand-50 text-brand-800 border border-brand-100'>Assinante</span>`:''}
+            </div>
+            <div class="text-xs text-slate-500">${c.phone||'—'}</div>
+          </div>
+          <div class="ml-auto">${statusBadge(a.status)}</div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mt-3">
+          <div class="p-3 border rounded-xl"><div class="text-xs text-slate-500">Data</div><div class="font-medium">${a.date.split('-').reverse().join('/')}</div></div>
+          <div class="p-3 border rounded-xl"><div class="text-xs text-slate-500">Horário</div><div class="font-medium">${a.start} - ${end}</div></div>
+          <div class="col-span-2 p-3 border rounded-xl">
+            <div class="text-xs text-slate-500">Serviço</div>
+            <div class="font-medium"><span class="inline-block w-2 h-2 rounded-full mr-2" style="background:${s.color}"></span>${s.name}
+              <span class="text-slate-500">• ${currency(s.price)} • ${a.duration} min</span></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mt-3">
+          <div class="p-3 border rounded-xl"><div class="text-xs text-slate-500">Total de visitas</div><div class="font-medium">${(c.visits||[]).length}</div></div>
+          <div class="p-3 border rounded-xl"><div class="text-xs text-slate-500">Visitas/mês</div><div class="font-medium">${visitsPerMonth(c)}</div></div>
+          <div class="col-span-2 p-3 border rounded-xl">
+            <div class="text-xs text-slate-500">Última compra</div>
+            <div class="font-medium">${last? `${last.product} em ${new Date(last.date).toLocaleDateString('pt-BR')} (${currency(last.price)})`:'Nenhuma compra registrada'}</div>
+          </div>
+        </div>
+
+        <div class="p-3 border rounded-xl mt-3">
+          <div class="text-sm font-medium mb-2">Preferências & Notas</div>
+          <div class="flex flex-wrap gap-2 mb-2">${(c.habits||[]).map(h=>`<span class='px-2 py-1 text-xs rounded-xl bg-brand-50 border border-brand-100 text-brand-800'>${h}</span>`).join('')}</div>
+          <div class="text-sm">${a.notes || c.notes || '—'}</div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 mt-3">
+          <button id="btnReschedule" class="px-3 py-2 border rounded-xl">Reagendar</button>
+          <button id="btnAddSale"   class="px-3 py-2 border rounded-xl">Adicionar venda</button>
+          <button id="btnWhats"     class="px-3 py-2 border rounded-xl">WhatsApp</button>
+          <button id="btnEdit"      class="px-3 py-2 border rounded-xl">Editar</button>
+        </div>`;
+      drawer.classList.remove('hidden');
+
+      document.querySelectorAll('[data-close-drawer]').forEach(b=> b.onclick = ()=> drawer.classList.add('hidden'));
+      document.getElementById('btnReschedule').onclick = ()=> openReschedule(a);
+      document.getElementById('btnAddSale').onclick   = ()=> alert('Abrir módulo de vendas do cliente.');
+      document.getElementById('btnWhats').onclick     = ()=> alert('Abrir WhatsApp do cliente.');
+      document.getElementById('btnEdit').onclick      = ()=> alert('Editar agendamento.');
+      document.getElementById('btnNoShow').onclick    = ()=> updateStatus(a.id,'noshow');
+      document.getElementById('btnCheckin').onclick   = ()=> updateStatus(a.id,'checkedin');
+      document.getElementById('btnDone').onclick      = ()=> updateStatus(a.id,'done');
+    }
+    function updateStatus(id,status){ const a=APPOINTMENTS.find(x=>x.id===id); if(!a) return; a.status=status; renderAgenda(); openAppt(id); }
+
+    /* ======= Modal Novo ======= */
+    const newModal = $('#newApptModal');
+    $('#mNew')?.addEventListener('click', ()=> openNew());
+    $('#saveAppt')?.addEventListener('click', saveNew);
+    document.querySelectorAll('[data-close-modal]').forEach(b=> b.addEventListener('click', ()=> newModal.classList.add('hidden')));
+    function openNew(){
+      $('#fClient').value='';
+      $('#fService').innerHTML = SERVICES.map(s=>`<option value='${s.id}'>${s.name}</option>`).join('');
+      $('#fDate').value  = fmtDateISO(currentDate);
+      $('#fStart').value = '09:00';
+      $('#fDuration').value = SERVICES[0].duration;
+      $('#fNotes').value = '';
+      newModal.classList.remove('hidden');
+    }
+    function saveNew(){
+      const clientName=$('#fClient').value.trim();
+      const serviceId=$('#fService').value;
+      const date=$('#fDate').value, start=$('#fStart').value, duration=parseInt($('#fDuration').value,10)||30;
+      const notes=$('#fNotes').value;
+      if(!clientName){ alert('Informe o nome do cliente.'); return; }
+      let client = CLIENTS.find(c=> c.name.toLowerCase()===clientName.toLowerCase());
+      if(!client){
+        client = { id:'c'+(CLIENTS.length+1), name:clientName, phone:'', member:false, since:fmtDateISO(new Date()),
+                   visits:[], purchases:[], habits:[], notes:'' };
+        CLIENTS.push(client);
+      }
+      const end = addMinutes(start,duration);
+      const conflict = APPOINTMENTS.some(a=> a.date===date && !(end <= a.start || start >= addMinutes(a.start,a.duration)));
+      if(conflict && !confirm('Há conflito com outro agendamento. Deseja continuar?')) return;
+
+      API.createAppointment({ clientId:client.id, serviceId, date, start, duration, status:'scheduled', notes })
+         .then(()=>{ newModal.classList.add('hidden'); currentDate=parseISO(date); syncDateControls(); renderAll(); });
+    }
+
+    /* ======= Modal Reagendar ======= */
+    const resModal = $('#resModal');
+    document.querySelectorAll('[data-close-modal2]').forEach(b=> b.addEventListener('click', ()=> resModal.classList.add('hidden')));
+    $('#saveReschedule').addEventListener('click', ()=>{
+      const appt = APPOINTMENTS.find(a=> a.id===selectedApptId); if(!appt) return;
+      const date=$('#rDate').value, start=$('#rStart').value, duration=parseInt($('#rDuration').value,10)||appt.duration;
+      const end = addMinutes(start,duration);
+      const conflict = APPOINTMENTS.some(a=> a.id!==appt.id && a.date===date && !(end <= a.start || start >= addMinutes(a.start,a.duration)));
+      if(conflict && !confirm('Há conflito com outro agendamento. Deseja continuar?')) return;
+
+      API.updateAppointment(appt.id,{date,start,duration}).then(()=>{
+        resModal.classList.add('hidden'); currentDate=parseISO(date); syncDateControls(); renderAll(); openAppt(appt.id);
+      });
+    });
+    function openReschedule(appt){
+      $('#rDate').value=appt.date; $('#rStart').value=appt.start; $('#rDuration').value=appt.duration;
+      resModal.classList.remove('hidden');
+    }
+
+    /* ======= Init ======= */
+    function renderAll(){ renderWeekStrip(); renderAgenda(); }
+    function init(){
+      document.getElementById('barberName').textContent = BARBER.name;
+      syncDateControls(); renderAll();
+      document.getElementById('refreshDay').addEventListener('click', renderAll);
+    }
+    init();
+  </script>
+</body>
+</html>

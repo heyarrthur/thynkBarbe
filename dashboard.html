@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>thynkBarber • Dashboard (Barbeiro)</title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              25:'#f8faff',50:'#f3f7ff',100:'#e6efff',200:'#d8e6ff',300:'#b9d0ff',
+              400:'#93b4ff',500:'#4a82ff',600:'#3a6af4',700:'#2e54c6',800:'#2746a3',900:'#203a85'
+            }
+          },
+          boxShadow:{ soft:'0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.08)' },
+          borderRadius:{ '2xl':'1rem' },
+          keyframes:{
+            fadeUp:{ from:{opacity:0, transform:'translateY(6px)'}, to:{opacity:1, transform:'translateY(0)'} }
+          },
+          animation:{ fadeUp:'fadeUp .28s ease both' }
+        }
+      }
+    }
+  </script>
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    *{ box-sizing:border-box }
+    html, body{ overflow-x:hidden; background:#fff }
+  </style>
+</head>
+<body class="bg-white text-slate-800">
+  <!-- TOPBAR (mobile) -->
+  <header class="lg:hidden sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
+    <div class="flex items-center gap-2 p-3">
+      <button id="openSidebar" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Abrir menu">
+        <i class="bi bi-list"></i>
+      </button>
+      <div class="font-medium">Dashboard</div>
+      <div class="ml-auto text-xs px-2 py-1 rounded bg-slate-100">Light</div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- SIDEBAR (desktop fixa) -->
+    <aside class="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 border-r bg-white z-40">
+      <div class="flex-1 flex flex-col">
+        <div class="px-5 py-5 border-b flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-brand-600 text-white grid place-items-center font-bold">tb</div>
+          <div>
+            <div class="font-bold">thynkBarber</div>
+            <div class="text-xs text-slate-500">Painel do Barbeiro</div>
+          </div>
+        </div>
+        <nav class="px-3 py-3 text-sm overflow-y-auto">
+          <div class="px-3 py-2 text-slate-400 uppercase tracking-wide">Administrativo</div>
+          <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-brand-50 text-brand-800 border border-brand-100">
+            <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Agendamentos</div>
+          <a href="agenda.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-calendar3"></i><span>Agendamentos</span>
+          </a>
+          <a href="historico.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-clock-history"></i><span>Histórico</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Finanças</div>
+          <a href="faturamento.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-wallet2"></i><span>Faturamento</span>
+          </a>
+          <a href="metas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-bullseye"></i><span>Metas</span>
+          </a>
+          <a href="vendas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-bag"></i><span>Vendas</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Perfil</div>
+          <div class="mx-3 p-3 border rounded-xl bg-slate-50">
+            <div class="text-xs text-slate-500">Barbeiro</div>
+            <div id="barberName" class="font-medium">—</div>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- SIDEBAR (mobile offcanvas) -->
+    <div id="sidebarSheet" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-black/40" data-close-sheet></div>
+      <div class="absolute left-0 top-0 h-full w-[92%] max-w-[340px] bg-white border-r shadow-xl animate-fadeUp">
+        <div class="flex items-center justify-between px-4 py-4 border-b">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand-600 text-white grid place-items-center font-bold">tb</div>
+            <div class="font-semibold">thynkBarber</div>
+          </div>
+          <button class="p-2 rounded-xl border hover:bg-slate-50" data-close-sheet aria-label="Fechar">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <nav class="p-3 text-sm">
+          <div class="px-3 py-2 text-slate-400 uppercase tracking-wide">Administrativo</div>
+          <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-brand-50 text-brand-800 border border-brand-100">
+            <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+          </a>
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Agendamentos</div>
+          <a href="agenda.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-calendar3"></i><span>Agendamentos</span>
+          </a>
+          <a href="historico.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-clock-history"></i><span>Histórico</span>
+          </a>
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Finanças</div>
+          <a href="faturamento.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-wallet2"></i><span>Faturamento</span>
+          </a>
+          <a href="metas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-bullseye"></i><span>Metas</span>
+          </a>
+          <a href="vendas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-bag"></i><span>Vendas</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <main class="flex-1 min-h-screen lg:ml-72">
+      <!-- Saudação + ações rápidas -->
+      <section class="p-3 lg:p-6 pb-0">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-brand-600 text-white grid place-items-center font-bold">tb</div>
+          <div class="min-w-0">
+            <div class="text-sm text-slate-500">Bem-vindo de volta</div>
+            <div id="helloName" class="font-semibold truncate">—</div>
+          </div>
+          <div class="ml-auto hidden sm:flex gap-2">
+            <a href="agenda.html" class="px-3 py-2 rounded-xl border hover:bg-slate-50 text-sm"><i class="bi bi-calendar3 me-1"></i>Agenda</a>
+            <a href="vendas.html" class="px-3 py-2 rounded-xl border hover:bg-slate-50 text-sm"><i class="bi bi-bag me-1"></i>Vender</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- KPIs Hoje / Mês -->
+      <section class="p-3 lg:p-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="p-4 border rounded-2xl bg-white shadow-soft">
+            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-cash-stack"></i> Receita hoje</div>
+            <div id="kpiRevToday" class="text-xl font-semibold mt-1">R$ —</div>
+            <div id="kpiRevCount" class="text-xs text-slate-500">— entradas</div>
+          </div>
+          <div class="p-4 border rounded-2xl bg-white shadow-soft">
+            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-scissors"></i> Cortes hoje</div>
+            <div id="kpiCutsToday" class="text-xl font-semibold mt-1">—</div>
+            <div class="text-xs text-slate-500">concluídos</div>
+          </div>
+          <div class="p-4 border rounded-2xl bg-white shadow-soft">
+            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-bag"></i> Produtos (mês)</div>
+            <div id="kpiProductsMonth" class="text-xl font-semibold mt-1">R$ —</div>
+            <div id="kpiProductsCount" class="text-xs text-slate-500">— vendas</div>
+          </div>
+          <div class="p-4 border rounded-2xl bg-white shadow-soft">
+            <div class="text-xs text-slate-500 flex items-center gap-2"><i class="bi bi-person-badge"></i> Assinaturas ativas</div>
+            <div id="kpiSubsActive" class="text-xl font-semibold mt-1">—</div>
+            <div class="text-xs text-slate-500">clientes</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Grid principal: Agenda (hoje), Vendas recentes, Gráfico, Metas Snapshot -->
+      <section class="p-3 lg:p-6">
+        <div class="grid lg:grid-cols-12 gap-4">
+          <!-- Agenda hoje -->
+          <div class="lg:col-span-6">
+            <div class="p-4 border rounded-2xl bg-white shadow-soft">
+              <div class="flex items-center justify-between">
+                <div class="font-medium">Agenda de hoje</div>
+                <a class="text-sm px-3 py-2 border rounded-xl hover:bg-slate-50" href="agenda.html"><i class="bi bi-arrow-right-circle me-1"></i>Ver agenda</a>
+              </div>
+              <div id="agendaToday" class="mt-3 space-y-2"></div>
+              <div id="agendaEmpty" class="p-6 text-center text-slate-500 border rounded-2xl hidden">Sem agendamentos hoje.</div>
+            </div>
+          </div>
+
+          <!-- Vendas recentes -->
+          <div class="lg:col-span-6">
+            <div class="p-4 border rounded-2xl bg-white shadow-soft">
+              <div class="flex items-center justify-between">
+                <div class="font-medium">Vendas recentes</div>
+                <a class="text-sm px-3 py-2 border rounded-xl hover:bg-slate-50" href="vendas.html"><i class="bi bi-bag me-1"></i>Novo</a>
+              </div>
+              <div id="recentSales" class="mt-3 space-y-2"></div>
+              <div id="recentEmpty" class="p-6 text-center text-slate-500 border rounded-2xl hidden">Sem vendas recentes.</div>
+            </div>
+          </div>
+
+          <!-- Receita por dia (14d) -->
+          <div class="lg:col-span-7">
+            <div class="p-4 border rounded-2xl bg-white shadow-soft">
+              <div class="font-medium">Receita (últimos 14 dias)</div>
+              <div id="chart" class="mt-4"></div>
+            </div>
+          </div>
+
+          <!-- Metas Snapshot -->
+          <div class="lg:col-span-5">
+            <div class="p-4 border rounded-2xl bg-white shadow-soft">
+              <div class="font-medium">Metas (mês)</div>
+              <div class="mt-3 space-y-3">
+                <div>
+                  <div class="flex items-center justify-between text-sm"><span class="text-slate-600"><i class="bi bi-scissors me-1"></i>Cortes</span><span id="goalCutsText" class="text-slate-500">—</span></div>
+                  <div class="w-full h-2 bg-slate-100 rounded-full mt-2"><div id="goalCutsBar" class="h-2 bg-brand-500 rounded-full" style="width:0%"></div></div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between text-sm"><span class="text-slate-600"><i class="bi bi-stars me-1"></i>Extras</span><span id="goalExtrasText" class="text-slate-500">—</span></div>
+                  <div class="w-full h-2 bg-slate-100 rounded-full mt-2"><div id="goalExtrasBar" class="h-2 bg-emerald-500 rounded-full" style="width:0%"></div></div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between text-sm"><span class="text-slate-600"><i class="bi bi-bag me-1"></i>Produtos</span><span id="goalProductsText" class="text-slate-500">—</span></div>
+                  <div class="w-full h-2 bg-slate-100 rounded-full mt-2"><div id="goalProductsBar" class="h-2 bg-indigo-500 rounded-full" style="width:0%"></div></div>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between text-sm"><span class="text-slate-600"><i class="bi bi-person-badge me-1"></i>Assinaturas</span><span id="goalSubsText" class="text-slate-500">—</span></div>
+                  <div class="w-full h-2 bg-slate-100 rounded-full mt-2"><div id="goalSubsBar" class="h-2 bg-amber-500 rounded-full" style="width:0%"></div></div>
+                </div>
+              </div>
+              <a href="metas.html" class="mt-4 inline-flex items-center gap-2 text-sm px-3 py-2 border rounded-xl hover:bg-slate-50"><i class="bi bi-bullseye"></i>Abrir metas</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- =================== JS =================== -->
+  <script>
+    /* ======= Mock / AJAX-ready ======= */
+    const BARBER   = { id:'b1', name:'Carlos Silva' };
+    const TODAY    = '2025-10-15';
+
+    // Appointments (alguns concluídos, alguns futuros)
+    const APPOINTMENTS = [
+      { id:'a1', client:'João Pedro', date:'2025-10-15', start:'09:00', duration:40, service:'Corte', status:'done', price:55 },
+      { id:'a2', client:'Matheus Lima', date:'2025-10-15', start:'10:00', duration:30, service:'Barba', status:'scheduled', price:40 },
+      { id:'a3', client:'Rafael Souza', date:'2025-10-15', start:'11:30', duration:70, service:'Combo', status:'scheduled', price:85 },
+      { id:'a4', client:'João Pedro', date:'2025-10-14', start:'17:00', duration:40, service:'Corte', status:'done', price:55 }
+    ];
+
+    // Transactions (produtos, extras, cortes, assinaturas) — para KPIs e metas
+    const TRANSACTIONS = [
+      { date:'2025-10-01', type:'cut', amount:55 },
+      { date:'2025-10-01', type:'product', amount:49.9 },
+      { date:'2025-10-02', type:'extra', amount:40 },
+      { date:'2025-10-03', type:'subscription', amount:89.9 },
+      { date:'2025-10-03', type:'cut', amount:55 },
+      { date:'2025-10-05', type:'product', amount:39.9 },
+      { date:'2025-10-08', type:'extra', amount:25 },
+      { date:'2025-10-10', type:'cut', amount:55 },
+      { date:'2025-10-12', type:'subscription', amount:89.9 },
+      { date:'2025-10-12', type:'product', amount:34.9 },
+      { date:'2025-10-14', type:'extra', amount:60 },
+      { date:'2025-10-15', type:'cut', amount:55 },
+      { date:'2025-10-15', type:'product', amount:29.9 },
+    ];
+
+    // Vendas salvas (produto/assinatura) — mostradas no "Vendas recentes"
+    const SALES = [
+      { id:'sv1', type:'product',   date:'2025-10-15', client:'João Pedro', desc:'Pomada Modeladora x1', pay:'pix', total:49.9 },
+      { id:'sv2', type:'subscription', date:'2025-10-12', client:'Rafael Souza', desc:'Plano Mensal (1m)', pay:'card', total:89.9 },
+      { id:'sv3', type:'product',   date:'2025-10-12', client:'Matheus Lima', desc:'Shampoo Fresh x1', pay:'cash', total:34.9 }
+    ];
+
+    // Metas do mês (snapshot)
+    const GOALS = { cuts: 1200, extras: 400, products: 350, subs: 500 };
+
+    /* ======= Utils ======= */
+    const $ = sel => document.querySelector(sel);
+    const pad = n=> String(n).padStart(2,'0');
+    const currency = v => v.toLocaleString('pt-BR',{ style:'currency', currency:'BRL' });
+    const fmtDate = s => s.split('-').reverse().join('/');
+    const addDays = (d, n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x };
+    const fmtISO = d=> `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+
+    /* ======= Sidebar mobile ======= */
+    $('#openSidebar')?.addEventListener('click', ()=> $('#sidebarSheet').classList.remove('hidden'));
+    document.querySelectorAll('[data-close-sheet]').forEach(b=> b.addEventListener('click', ()=> $('#sidebarSheet').classList.add('hidden')));
+
+    /* ======= KPIs ======= */
+    function kpis(){
+      const todayTx = TRANSACTIONS.filter(t=> t.date===TODAY);
+      const revToday = todayTx.reduce((acc,t)=> acc+t.amount,0);
+      $('#kpiRevToday').textContent = currency(revToday);
+      $('#kpiRevCount').textContent = `${todayTx.length} entradas`;
+
+      const cutsToday = APPOINTMENTS.filter(a=> a.date===TODAY && a.status==='done' && a.service.toLowerCase().includes('corte')).length;
+      $('#kpiCutsToday').textContent = cutsToday;
+
+      const ym = TODAY.slice(0,7);
+      const monthProducts = TRANSACTIONS.filter(t=> t.date.startsWith(ym) && t.type==='product');
+      const prodTotal = monthProducts.reduce((acc,t)=> acc+t.amount,0);
+      $('#kpiProductsMonth').textContent = currency(prodTotal);
+      $('#kpiProductsCount').textContent = `${monthProducts.length} vendas`;
+
+      // assinatura ativa (mock simples)
+      const subsActive = 42; // substitua por contagem real
+      $('#kpiSubsActive').textContent = subsActive;
+    }
+
+    /* ======= Agenda de hoje ======= */
+    function renderAgenda(){
+      const cont = $('#agendaToday'); cont.innerHTML='';
+      const list = APPOINTMENTS.filter(a=> a.date===TODAY).sort((a,b)=> a.start.localeCompare(b.start));
+      if(list.length===0){ $('#agendaEmpty').classList.remove('hidden'); return } else { $('#agendaEmpty').classList.add('hidden'); }
+      list.forEach((a,i)=>{
+        const row=document.createElement('div'); row.className='p-3 border rounded-2xl bg-white shadow-soft animate-fadeUp'; row.style.animationDelay=`${i*0.03}s`;
+        row.innerHTML = `
+          <div class='flex items-center justify-between'>
+            <div class='text-xs text-slate-500'>${a.start} • ${a.duration} min</div>
+            ${ a.status==='done' ? `<span class='px-2 py-0.5 text-xs rounded-xl border bg-emerald-50 text-emerald-800 border-emerald-200'>Concluído</span>` : `<span class='px-2 py-0.5 text-xs rounded-xl border bg-brand-50 text-brand-800 border-brand-200'>Agendado</span>` }
+          </div>
+          <div class='mt-2 flex items-center gap-3'>
+            <div class='w-10 h-10 rounded-full grid place-items-center text-brand-800 border' style='background:rgba(74,130,255,.08); border-color:rgba(74,130,255,.25)'>${a.client.split(' ').map(p=>p[0]).slice(0,2).join('')}</div>
+            <div class='min-w-0'>
+              <div class='font-medium truncate'>${a.client}</div>
+              <div class='text-sm text-slate-500'>${a.service}</div>
+            </div>
+            <div class='ml-auto text-right'>
+              <div class='text-sm'>${currency(a.price)}</div>
+            </div>
+          </div>`;
+        cont.appendChild(row);
+      });
+    }
+
+    /* ======= Vendas recentes ======= */
+    function renderRecentSales(){
+      const cont = $('#recentSales'); cont.innerHTML='';
+      if(SALES.length===0){ $('#recentEmpty').classList.remove('hidden'); return } else { $('#recentEmpty').classList.add('hidden'); }
+      SALES.slice(0,6).forEach((s,i)=>{
+        const row=document.createElement('div'); row.className='p-3 border rounded-2xl bg-white shadow-soft animate-fadeUp'; row.style.animationDelay=`${i*0.02}s`;
+        row.innerHTML = `
+          <div class='flex items-center justify-between'>
+            <div class='text-xs text-slate-500'>${fmtDate(s.date)}</div>
+            <span class='px-2 py-0.5 text-xs rounded-xl border ${ s.type==='product' ? 'bg-indigo-50 text-indigo-800 border-indigo-200' : 'bg-amber-50 text-amber-800 border-amber-200' }'>${ s.type==='product' ? 'Produto' : 'Assinatura' }</span>
+          </div>
+          <div class='mt-2 flex items-center gap-3'>
+            <div class='w-10 h-10 rounded-full grid place-items-center text-brand-800 border' style='background:rgba(74,130,255,.08); border-color:rgba(74,130,255,.25)'>${s.client.split(' ').map(p=>p[0]).slice(0,2).join('')}</div>
+            <div class='min-w-0'>
+              <div class='font-medium truncate'>${s.client}</div>
+              <div class='text-sm text-slate-500 truncate'>${s.desc}</div>
+            </div>
+            <div class='ml-auto text-right'>
+              <div class='text-sm'>${currency(s.total)}</div>
+              <div class='text-xs text-slate-500'>${ s.pay==='pix' ? 'PIX' : s.pay==='card' ? 'Cartão' : 'Dinheiro' }</div>
+            </div>
+          </div>`;
+        cont.appendChild(row);
+      });
+    }
+
+    /* ======= Receita 14 dias (SVG) ======= */
+    function renderChart(){
+      const wrap = $('#chart'); wrap.innerHTML='';
+      const end = new Date(TODAY); const start = addDays(end, -13);
+      const days=[]; for(let i=0;i<14;i++){ const d=addDays(start,i); days.push(fmtISO(d)); }
+      const map = new Map(); TRANSACTIONS.forEach(t=> map.set(t.date, (map.get(t.date)||0)+t.amount));
+      const pts = days.map(d=> [d, map.get(d)||0]);
+      const max = Math.max(1, ...pts.map(p=> p[1]));
+      const W=560, H=160, P=24; const step=(W-P*2)/Math.max(pts.length-1,1);
+      const y = v => H-P - (v/max)*(H-P*2); const x = i => P + i*step;
+      let d=''; pts.forEach((p,i)=> d += (i? 'L':'M') + x(i) + ',' + y(p[1]) + ' ');
+      const circles = pts.map((p,i)=> `<circle cx="${x(i)}" cy="${y(p[1])}" r="3" class="fill-brand-600"/>`).join('');
+      const labels  = pts.map((p,i)=> `<text x="${x(i)}" y="${H-6}" font-size="10" text-anchor="middle" class="fill-slate-500">${p[0].slice(8,10)}</text>`).join('');
+      wrap.innerHTML = `
+        <svg viewBox="0 0 ${W} ${H}" class="w-full">
+          <defs>
+            <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#4a82ff" stop-opacity=".35"/>
+              <stop offset="100%" stop-color="#4a82ff" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect x="1" y="1" width="${W-2}" height="${H-2}" rx="12" class="fill-white stroke-slate-200"/>
+          <path d="${d}" class="stroke-brand-600 fill-none" stroke-width="2"/>
+          <path d="${d} L ${x(pts.length-1)} ${H-P} L ${x(0)} ${H-P} Z" fill="url(#g)" opacity="0.5"/>
+          ${circles}
+          ${labels}
+        </svg>`;
+    }
+
+    /* ======= Metas Snapshot ======= */
+    function pct(v,goal){ return goal>0 ? Math.min(100, Math.round((v/goal)*100)) : 0 }
+    function goalsSnapshot(){
+      const ym = TODAY.slice(0,7);
+      const monthRows = TRANSACTIONS.filter(t=> t.date.startsWith(ym));
+      const sum = { cuts:0, extras:0, products:0, subs:0 };
+      monthRows.forEach(r=>{ if(r.type==='cut') sum.cuts+=r.amount; else if(r.type==='extra') sum.extras+=r.amount; else if(r.type==='product') sum.products+=r.amount; else if(r.type==='subscription') sum.subs+=r.amount; });
+      const pCuts=pct(sum.cuts,GOALS.cuts), pExtras=pct(sum.extras,GOALS.extras), pProd=pct(sum.products,GOALS.products), pSubs=pct(sum.subs,GOALS.subs);
+      $('#goalCutsText').textContent    = `${currency(sum.cuts)} / ${currency(GOALS.cuts)} (${pCuts}%)`;
+      $('#goalExtrasText').textContent  = `${currency(sum.extras)} / ${currency(GOALS.extras)} (${pExtras}%)`;
+      $('#goalProductsText').textContent= `${currency(sum.products)} / ${currency(GOALS.products)} (${pProd}%)`;
+      $('#goalSubsText').textContent    = `${currency(sum.subs)} / ${currency(GOALS.subs)} (${pSubs}%)`;
+      $('#goalCutsBar').style.width = pCuts+'%';
+      $('#goalExtrasBar').style.width = pExtras+'%';
+      $('#goalProductsBar').style.width = pProd+'%';
+      $('#goalSubsBar').style.width = pSubs+'%';
+    }
+
+    /* ======= Init ======= */
+    function init(){
+      document.getElementById('barberName').textContent = BARBER.name;
+      document.getElementById('helloName').textContent = BARBER.name;
+      kpis(); renderAgenda(); renderRecentSales(); renderChart(); goalsSnapshot();
+    }
+    init();
+  </script>
+</body>
+</html>

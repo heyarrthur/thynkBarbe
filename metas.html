@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>thynkBarber • Metas (Barbeiro)</title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              25:'#f8faff',50:'#f3f7ff',100:'#e6efff',200:'#d8e6ff',300:'#b9d0ff',
+              400:'#93b4ff',500:'#4a82ff',600:'#3a6af4',700:'#2e54c6',800:'#2746a3',900:'#203a85'
+            }
+          },
+          boxShadow:{ soft:'0 1px 2px rgba(16,24,40,.04), 0 6px 18px rgba(16,24,40,.08)' },
+          borderRadius:{ '2xl':'1rem' },
+          keyframes:{ fadeUp:{ from:{opacity:0, transform:'translateY(6px)'}, to:{opacity:1, transform:'translateY(0)'} } },
+          animation:{ fadeUp:'fadeUp .28s ease both' }
+        }
+      }
+    }
+  </script>
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    *{ box-sizing:border-box }
+    html, body{ overflow-x:hidden; background:#fff }
+  </style>
+</head>
+<body class="bg-white text-slate-800">
+
+  <!-- TOPBAR (mobile) -->
+  <header class="lg:hidden sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
+    <div class="flex items-center gap-2 p-3">
+      <button id="openSidebar" class="p-2 rounded-xl border hover:bg-slate-50" aria-label="Abrir menu">
+        <i class="bi bi-list"></i>
+      </button>
+      <div class="font-medium">Metas</div>
+      <div class="ml-auto text-xs px-2 py-1 rounded bg-slate-100">Light</div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- SIDEBAR (desktop fixa) -->
+    <aside class="hidden lg:flex lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 border-r bg-white z-40">
+      <div class="flex-1 flex flex-col">
+        <div class="px-5 py-5 border-b flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-brand-600 text-white grid place-items-center font-bold">tb</div>
+          <div>
+            <div class="font-bold">thynkBarber</div>
+            <div class="text-xs text-slate-500">Painel do Barbeiro</div>
+          </div>
+        </div>
+        <nav class="px-3 py-3 text-sm overflow-y-auto">
+          <div class="px-3 py-2 text-slate-400 uppercase tracking-wide">Administrativo</div>
+          <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Agendamentos</div>
+          <a href="agenda.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-calendar3"></i><span>Agendamentos</span>
+          </a>
+          <a href="historico.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-clock-history"></i><span>Histórico</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Finanças</div>
+          <a href="faturamento.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-wallet2"></i><span>Faturamento</span>
+          </a>
+          <a href="metas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-brand-50 text-brand-800 border border-brand-100">
+            <i class="bi bi-bullseye"></i><span>Metas</span>
+          </a>
+          <a href="vendas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-bag"></i><span>Vendas</span>
+          </a>
+
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Perfil</div>
+          <div class="mx-3 p-3 border rounded-xl bg-slate-50">
+            <div class="text-xs text-slate-500">Barbeiro</div>
+            <div id="barberName" class="font-medium">—</div>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- SIDEBAR (mobile offcanvas) -->
+    <div id="sidebarSheet" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-black/40" data-close-sheet></div>
+      <div class="absolute left-0 top-0 h-full w-[92%] max-w-[340px] bg-white border-r shadow-xl animate-fadeUp">
+        <div class="flex items-center justify-between px-4 py-4 border-b">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand-600 text-white grid place-items-center font-bold">tb</div>
+            <div class="font-semibold">thynkBarber</div>
+          </div>
+          <button class="p-2 rounded-xl border hover:bg-slate-50" data-close-sheet aria-label="Fechar">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <nav class="p-3 text-sm">
+          <div class="px-3 py-2 text-slate-400 uppercase tracking-wide">Administrativo</div>
+          <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+          </a>
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Agendamentos</div>
+          <a href="agenda.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-calendar3"></i><span>Agendamentos</span>
+          </a>
+          <a href="historico.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-clock-history"></i><span>Histórico</span>
+          </a>
+          <div class="px-3 pt-4 pb-2 text-slate-400 uppercase tracking-wide">Finanças</div>
+          <a href="faturamento.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-wallet2"></i><span>Faturamento</span>
+          </a>
+          <a href="metas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl bg-brand-50 text-brand-800 border border-brand-100">
+            <i class="bi bi-bullseye"></i><span>Metas</span>
+          </a>
+          <a href="vendas.html" class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50">
+            <i class="bi bi-bag"></i><span>Vendas</span>
+          </a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <main class="flex-1 min-h-screen lg:ml-72">
+      <!-- FILTROS (somente período) -->
+      <section class="px-3 lg:px-6 py-3 border-b bg-white sticky top-0 z-20">
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-2">
+          <input id="filterMonth" type="month" class="col-span-2 md:col-span-2 border rounded-xl px-3 py-2 text-sm" />
+          <input id="dateFrom" type="date" class="col-span-1 border rounded-xl px-3 py-2 text-sm" />
+          <input id="dateTo"   type="date" class="col-span-1 border rounded-xl px-3 py-2 text-sm" />
+          <div class="flex items-center gap-2 col-span-2 md:col-span-2">
+            <button id="applyFilters" class="px-3 py-2 border rounded-xl text-sm w-full md:w-auto">
+              <i class="bi bi-funnel me-1"></i>Aplicar
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 CARDS (empilhados) -->
+      <section class="p-3 lg:p-6">
+        <div class="grid grid-cols-1 gap-4">
+          <!-- Corte -->
+          <div class="p-4 md:p-5 border rounded-2xl bg-white shadow-soft animate-fadeUp">
+            <div class="flex items-center gap-2 text-xs text-slate-500"><i class="bi bi-scissors"></i> Meta de Cortes</div>
+            <div class="mt-3 flex items-center gap-4">
+              <div class="w-20 h-20">
+                <svg viewBox="0 0 36 36" class="w-full h-full">
+                  <defs>
+                    <linearGradient id="gc" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#4a82ff"/><stop offset="100%" stop-color="#93b4ff"/></linearGradient>
+                  </defs>
+                  <path d="M18 2 a 16 16 0 1 1 0 32 a 16 16 0 1 1 0 -32" fill="none" stroke="#e5e7eb" stroke-width="4"/>
+                  <path id="ringCuts" d="" fill="none" stroke="url(#gc)" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-2xl font-semibold" id="cutsPct">0%</div>
+                <div class="text-xs text-slate-500">R$ <span id="cutsNow">0,00</span> de <span id="cutsGoal">0,00</span></div>
+              </div>
+            </div>
+            <div class="mt-3 w-full h-2 bg-slate-100 rounded-full">
+              <div id="barCuts" class="h-2 rounded-full bg-brand-500" style="width:0%"></div>
+            </div>
+          </div>
+
+          <!-- Extras -->
+          <div class="p-4 md:p-5 border rounded-2xl bg-white shadow-soft animate-fadeUp" style="animation-delay:.03s">
+            <div class="flex items-center gap-2 text-xs text-slate-500"><i class="bi bi-stars"></i> Meta de Serviços extras</div>
+            <div class="mt-3 flex items-center gap-4">
+              <div class="w-20 h-20">
+                <svg viewBox="0 0 36 36" class="w-full h-full">
+                  <defs>
+                    <linearGradient id="ge" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#22c55e"/><stop offset="100%" stop-color="#86efac"/></linearGradient>
+                  </defs>
+                  <path d="M18 2 a 16 16 0 1 1 0 32 a 16 16 0 1 1 0 -32" fill="none" stroke="#e5e7eb" stroke-width="4"/>
+                  <path id="ringExtras" d="" fill="none" stroke="url(#ge)" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-2xl font-semibold" id="extrasPct">0%</div>
+                <div class="text-xs text-slate-500">R$ <span id="extrasNow">0,00</span> de <span id="extrasGoal">0,00</span></div>
+              </div>
+            </div>
+            <div class="mt-3 w-full h-2 bg-slate-100 rounded-full">
+              <div id="barExtras" class="h-2 rounded-full bg-emerald-500" style="width:0%"></div>
+            </div>
+          </div>
+
+          <!-- Produtos -->
+          <div class="p-4 md:p-5 border rounded-2xl bg-white shadow-soft animate-fadeUp" style="animation-delay:.06s">
+            <div class="flex items-center gap-2 text-xs text-slate-500"><i class="bi bi-bag"></i> Meta de Produtos</div>
+            <div class="mt-3 flex items-center gap-4">
+              <div class="w-20 h-20">
+                <svg viewBox="0 0 36 36" class="w-full h-full">
+                  <defs>
+                    <linearGradient id="gp" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#a5b4fc"/></linearGradient>
+                  </defs>
+                  <path d="M18 2 a 16 16 0 1 1 0 32 a 16 16 0 1 1 0 -32" fill="none" stroke="#e5e7eb" stroke-width="4"/>
+                  <path id="ringProducts" d="" fill="none" stroke="url(#gp)" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-2xl font-semibold" id="productsPct">0%</div>
+                <div class="text-xs text-slate-500">R$ <span id="productsNow">0,00</span> de <span id="productsGoal">0,00</span></div>
+              </div>
+            </div>
+            <div class="mt-3 w-full h-2 bg-slate-100 rounded-full">
+              <div id="barProducts" class="h-2 rounded-full bg-indigo-500" style="width:0%"></div>
+            </div>
+          </div>
+
+          <!-- Assinaturas -->
+          <div class="p-4 md:p-5 border rounded-2xl bg-white shadow-soft animate-fadeUp" style="animation-delay:.09s">
+            <div class="flex items-center gap-2 text-xs text-slate-500"><i class="bi bi-person-badge"></i> Meta de Assinaturas</div>
+            <div class="mt-3 flex items-center gap-4">
+              <div class="w-20 h-20">
+                <svg viewBox="0 0 36 36" class="w-full h-full">
+                  <defs>
+                    <linearGradient id="gs" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fcd34d"/></linearGradient>
+                  </defs>
+                  <path d="M18 2 a 16 16 0 1 1 0 32 a 16 16 0 1 1 0 -32" fill="none" stroke="#e5e7eb" stroke-width="4"/>
+                  <path id="ringSubs" d="" fill="none" stroke="url(#gs)" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-2xl font-semibold" id="subsPct">0%</div>
+                <div class="text-xs text-slate-500">R$ <span id="subsNow">0,00</span> de <span id="subsGoal">0,00</span></div>
+              </div>
+            </div>
+            <div class="mt-3 w-full h-2 bg-slate-100 rounded-full">
+              <div id="barSubs" class="h-2 rounded-full bg-amber-500" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- =================== JS =================== -->
+  <script>
+    /* ======= Dados mock / metas de exemplo ======= */
+    const BARBER = { id: 'b1', name: 'Carlos Silva' };
+
+    // Lançamentos do período (troque pelo retorno do seu back-end)
+    const TRANSACTIONS = [
+      { date:'2025-10-01', type:'cut', amount:55 },
+      { date:'2025-10-01', type:'product', amount:49.9 },
+      { date:'2025-10-02', type:'extra', amount:40 },
+      { date:'2025-10-03', type:'subscription', amount:89.9 },
+      { date:'2025-10-03', type:'cut', amount:55 },
+      { date:'2025-10-05', type:'product', amount:39.9 },
+      { date:'2025-10-08', type:'extra', amount:25 },
+      { date:'2025-10-10', type:'cut', amount:55 },
+      { date:'2025-10-12', type:'subscription', amount:89.9 },
+      { date:'2025-10-12', type:'product', amount:34.9 },
+      { date:'2025-10-14', type:'extra', amount:60 },
+      { date:'2025-10-15', type:'cut', amount:55 },
+      { date:'2025-10-15', type:'product', amount:29.9 },
+    ];
+
+    // Metas de exemplo (por mês/período) — substitua pelos valores do back-end
+    const DEFAULT_GOALS = { cuts: 1200, extras: 400, products: 350, subs: 500 };
+
+    /* ======= Utils ======= */
+    const $ = sel => document.querySelector(sel);
+    const pad = n=> String(n).padStart(2,'0');
+    const fmtDateISO = d=> `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    function monthRange(ym){ const [Y,M]=ym.split('-').map(Number); return { from: fmtDateISO(new Date(Y,M-1,1)), to: fmtDateISO(new Date(Y,M,0)) } }
+    const currencyNumber = v => v.toLocaleString('pt-BR',{ minimumFractionDigits:2, maximumFractionDigits:2 });
+
+    let range = { from:'2025-10-01', to:'2025-10-31' };
+    let goals = { ...DEFAULT_GOALS };
+
+    /* ======= Sidebar mobile ======= */
+    $('#openSidebar')?.addEventListener('click', ()=> $('#sidebarSheet').classList.remove('hidden'));
+    document.querySelectorAll('[data-close-sheet]').forEach(b=> b.addEventListener('click', ()=> $('#sidebarSheet').classList.add('hidden')));
+
+    /* ======= Filtros ======= */
+    $('#filterMonth').addEventListener('change', ()=>{ range = monthRange($('#filterMonth').value); $('#dateFrom').value=range.from; $('#dateTo').value=range.to; loadAll(); });
+    $('#applyFilters').addEventListener('click', ()=>{ range.from = $('#dateFrom').value || range.from; range.to = $('#dateTo').value || range.to; loadAll(); });
+
+    /* ======= Cálculos ======= */
+    function getRowsInRange(all, from, to){ return all.filter(t => t.date >= from && t.date <= to); }
+    function bucketByType(rows){
+      const b = { cuts:0, extras:0, products:0, subs:0 };
+      rows.forEach(r=>{
+        if(r.type==='cut') b.cuts+=r.amount;
+        else if(r.type==='extra') b.extras+=r.amount;
+        else if(r.type==='product') b.products+=r.amount;
+        else if(r.type==='subscription') b.subs+=r.amount;
+      });
+      return b;
+    }
+    function pct(v,goal){ return goal>0 ? Math.min(100, Math.round((v/goal)*100)) : 0 }
+
+    /* ======= Ring arc (SVG) ======= */
+    function arcPath(p){
+      const pct = Math.min(99.999, Math.max(0,p)); // evita 100% virar 0
+      const r=16, cx=18, cy=18;
+      const a = (pct/100)*2*Math.PI;
+      const x = cx + r * Math.sin(a);
+      const y = cy - r * Math.cos(a);
+      const large = a>Math.PI ? 1 : 0;
+      return `M ${cx} ${cy-r} A ${r} ${r} 0 ${large} 1 ${x} ${y}`;
+    }
+
+    /* ======= Render ======= */
+    function renderProgress(rows){
+      const b = bucketByType(rows);
+
+      // Percentuais
+      const pCuts = pct(b.cuts, goals.cuts);
+      const pExtras = pct(b.extras, goals.extras);
+      const pProd = pct(b.products, goals.products);
+      const pSubs = pct(b.subs, goals.subs);
+
+      // Textos
+      $('#cutsPct').textContent = pCuts + '%';
+      $('#extrasPct').textContent = pExtras + '%';
+      $('#productsPct').textContent = pProd + '%';
+      $('#subsPct').textContent = pSubs + '%';
+
+      $('#cutsNow').textContent = currencyNumber(b.cuts);
+      $('#extrasNow').textContent = currencyNumber(b.extras);
+      $('#productsNow').textContent = currencyNumber(b.products);
+      $('#subsNow').textContent = currencyNumber(b.subs);
+
+      $('#cutsGoal').textContent = currencyNumber(goals.cuts);
+      $('#extrasGoal').textContent = currencyNumber(goals.extras);
+      $('#productsGoal').textContent = currencyNumber(goals.products);
+      $('#subsGoal').textContent = currencyNumber(goals.subs);
+
+      // Barras
+      $('#barCuts').style.width = pCuts + '%';
+      $('#barExtras').style.width = pExtras + '%';
+      $('#barProducts').style.width = pProd + '%';
+      $('#barSubs').style.width = pSubs + '%';
+
+      // Anéis
+      $('#ringCuts').setAttribute('d', arcPath(pCuts));
+      $('#ringExtras').setAttribute('d', arcPath(pExtras));
+      $('#ringProducts').setAttribute('d', arcPath(pProd));
+      $('#ringSubs').setAttribute('d', arcPath(pSubs));
+    }
+
+    /* ======= Load (mock) ======= */
+    async function loadAll(){
+      // Se quiser usar back-end, descomente e implemente:
+      // const tx = await fetch(`/api/barbers/${BARBER.id}/transactions?from=${range.from}&to=${range.to}`).then(r=>r.json());
+      // const gl = await fetch(`/api/barbers/${BARBER.id}/goals?from=${range.from}&to=${range.to}`).then(r=>r.json());
+      // const rows = tx; goals = gl;
+
+      const rows = getRowsInRange(TRANSACTIONS, range.from, range.to); // mock local
+      renderProgress(rows);
+    }
+
+    /* ======= Init ======= */
+    function init(){
+      document.getElementById('barberName').textContent = BARBER.name;
+
+      // mês atual por padrão
+      const today = new Date('2025-10-15'); // ajuste se quiser “hoje”
+      const ym = today.toISOString().slice(0,7);
+      document.getElementById('filterMonth').value = ym;
+      range = monthRange(ym);
+      document.getElementById('dateFrom').value = range.from;
+      document.getElementById('dateTo').value = range.to;
+
+      loadAll();
+    }
+    init();
+  </script>
+</body>
+</html>
